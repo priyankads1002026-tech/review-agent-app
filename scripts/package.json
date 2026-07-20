@@ -1,0 +1,13 @@
+{
+  "name": "claim-billing-review-agent",
+  "version": "1.0.0",
+  "description": "PR review agent scripts (GitHub Action + local test runner)",
+  "private": true,
+  "scripts": {
+    "test:review": "node review.local.js"
+  },
+  "dependencies": {
+    "@google/genai": "^2.11.0",
+    "@octokit/rest": "^22.0.1"
+  }
+}

@@ -1,0 +1,19 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Build output
+frontend/dist/
+backend/target/
+
+# Logs / env
+*.log
+.env
+.env.*
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+
+# Accidental brace-expansion junk folder (created by a bad mkdir in PowerShell)
+{.github/

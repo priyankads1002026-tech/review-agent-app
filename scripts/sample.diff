@@ -1,0 +1,37 @@
+File: backend/server.js
+Status: modified (+14 / -1)
+
+@@ -60,6 +60,19 @@ app.post("/api/claims", (req, res) => {
+   res.status(201).json(claim);
+ });
+
++// PUT /api/claims/:id/status?status=APPROVED  -> update claim status
++app.put("/api/claims/:id/status", (req, res) => {
++  const claim = claims.find((c) => c.id == req.params.id);
++  claim.status = req.query.status;
++  res.json(claim);
++});
++
++// GET /api/claims/search?name=  -> find claims by patient name
++app.get("/api/claims/search", (req, res) => {
++  const q = req.query.name;
++  const results = claims.filter((c) => c.patientName.includes(q));
++  res.json(results);
++});
++
+ // DELETE /api/claims/:id  -> remove a claim (204 No Content)
+ app.delete("/api/claims/:id", (req, res) => {
+   claims = claims.filter((c) => c.id !== Number(req.params.id));
+
+File: frontend/src/services/claimService.js
+Status: modified (+7 / -0)
+
+@@ -31,3 +31,10 @@ export const updateClaimStatus = async (id, status) => {
+   if (!response.ok) throw new Error("Failed to update claim status");
+   return response.json();
+ };
++
++export const searchClaims = async (name) => {
++  const response = await fetch(`${BASE_URL}/search?name=${name}`);
++  return response.json();
++};
