@@ -25,6 +25,25 @@ app.get("/api/claims", (req, res) => {
   res.json(claims);
 });
 
+// GET /api/claims/summary  -> aggregate stats across all claims
+app.get("/api/claims/summary", (req, res) => {
+  const byStatus = claims.reduce((acc, c) => {
+    acc[c.status] = (acc[c.status] || 0) + 1;
+    return acc;
+  }, {});
+
+  const totalClaimAmount = claims.reduce(
+    (sum, c) => sum + Number(c.claimAmount || 0),
+    0
+  );
+
+  res.json({
+    total: claims.length,
+    byStatus,
+    totalClaimAmount,
+  });
+});
+
 // GET /api/claims/status/:status  -> claims filtered by status
 app.get("/api/claims/status/:status", (req, res) => {
   const status = req.params.status;
