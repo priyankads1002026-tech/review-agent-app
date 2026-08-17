@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { fetchClaims, updateClaimStatus, deleteClaim } from "../services/claimService";
+import {
+  fetchClaims,
+  fetchClaimsByStatus,
+  fetchClaimsByPolicy,
+  updateClaimStatus,
+  deleteClaim,
+} from "../services/claimService";
+
+const STATUS_OPTIONS = ["PENDING", "APPROVED", "REJECTED"];
 
 const money = (n) =>
   new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(
@@ -16,16 +24,26 @@ function ClaimList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [busyId, setBusyId] = useState(null); // row currently being updated/deleted
+  // Active filter drives which endpoint loadClaims() hits: all / by status / by policy.
+  const [filter, setFilter] = useState({ type: "all", value: "" });
+  const [policyInput, setPolicyInput] = useState("");
 
   useEffect(() => {
     loadClaims();
-  }, []);
+  }, [filter]);
 
   const loadClaims = async () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await fetchClaims();
+      let data;
+      if (filter.type === "status") {
+        data = await fetchClaimsByStatus(filter.value);
+      } else if (filter.type === "policy") {
+        data = await fetchClaimsByPolicy(filter.value);
+      } else {
+        data = await fetchClaims();
+      }
       setClaims(data);
     } catch (err) {
       setError(
@@ -61,6 +79,22 @@ function ClaimList() {
     } finally {
       setBusyId(null);
     }
+  };
+
+  const handleStatusFilter = (value) => {
+    setPolicyInput("");
+    setFilter(value ? { type: "status", value } : { type: "all", value: "" });
+  };
+
+  const handlePolicySearch = (e) => {
+    e.preventDefault();
+    const value = policyInput.trim();
+    setFilter(value ? { type: "policy", value } : { type: "all", value: "" });
+  };
+
+  const clearFilters = () => {
+    setPolicyInput("");
+    setFilter({ type: "all", value: "" });
   };
 
   // ---- summary stats ----
@@ -119,6 +153,44 @@ function ClaimList() {
           <button className="btn btn--ghost" onClick={loadClaims}>
             ↻ Refresh
           </button>
+        </div>
+
+        <div className="filter-bar">
+          <label className="filter-field">
+            <span className="filter-field__label">Status</span>
+            <select
+              value={filter.type === "status" ? filter.value : ""}
+              onChange={(e) => handleStatusFilter(e.target.value)}
+            >
+              <option value="">All statuses</option>
+              {STATUS_OPTIONS.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <form className="filter-field" onSubmit={handlePolicySearch}>
+            <span className="filter-field__label">Policy No.</span>
+            <div className="filter-field__row">
+              <input
+                type="text"
+                placeholder="e.g. POL-1001"
+                value={policyInput}
+                onChange={(e) => setPolicyInput(e.target.value)}
+              />
+              <button type="submit" className="btn btn--sm">
+                Search
+              </button>
+            </div>
+          </form>
+
+          {filter.type !== "all" && (
+            <button className="btn btn--sm btn--ghost" onClick={clearFilters}>
+              Clear filters
+            </button>
+          )}
         </div>
 
         {claims.length === 0 ? (

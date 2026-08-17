@@ -275,8 +275,40 @@ table.claims tbody tr:hover { background: #f8fbff; }
   flex-wrap: wrap;
 }
 
+.filter-bar {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--brand-100, #e5e7eb);
+}
+.filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.filter-field__label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-700, #374151);
+}
+.filter-field__row {
+  display: flex;
+  gap: 8px;
+}
+.filter-field select,
+.filter-field input {
+  padding: 8px 10px;
+  border: 1px solid var(--brand-100, #d1d5db);
+  border-radius: 8px;
+  font-size: 14px;
+}
+
 /* ---------------- Responsive ---------------- */
 @media (max-width: 640px) {
   .form-grid { grid-template-columns: 1fr; }
   .app-header__inner, .page { padding-left: 16px; padding-right: 16px; }
+  .filter-bar { flex-direction: column; align-items: stretch; }
 }

@@ -12,6 +12,20 @@ export const fetchClaimSummary = async () => {
   return response.json();
 };
 
+export const fetchClaimsByStatus = async (status) => {
+  const response = await fetch(`${BASE_URL}/status/${encodeURIComponent(status)}`);
+  if (!response.ok) throw new Error("Failed to fetch claims by status");
+  return response.json();
+};
+
+export const fetchClaimsByPolicy = async (policyNumber) => {
+  const response = await fetch(
+    `${BASE_URL}/policy/${encodeURIComponent(policyNumber)}`
+  );
+  if (!response.ok) throw new Error("Failed to fetch claims by policy");
+  return response.json();
+};
+
 export const fetchClaimById = async (id) => {
   const response = await fetch(`${BASE_URL}/${id}`);
   if (!response.ok) throw new Error("Claim not found");
