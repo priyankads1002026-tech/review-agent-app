@@ -27,15 +27,21 @@ app.get("/api/claims", (req, res) => {
 
 // GET /api/claims/summary  -> aggregate stats across all claims
 app.get("/api/claims/summary", (req, res) => {
-  const byStatus = claims.reduce((acc, c) => {
-    acc[c.status] = (acc[c.status] || 0) + 1;
-    return acc;
-  }, {});
-
-  const totalClaimAmount = claims.reduce(
-    (sum, c) => sum + Number(c.claimAmount || 0),
-    0
+  // Seed the known statuses to 0 so the response shape is stable and the
+  // frontend never has to defensively handle a missing key.
+  const byStatus = claims.reduce(
+    (acc, c) => {
+      acc[c.status] = (acc[c.status] || 0) + 1;
+      return acc;
+    },
+    { PENDING: 0, APPROVED: 0, REJECTED: 0 }
   );
+
+  // NaN-safe: a non-numeric claimAmount (e.g. "1,000") must not poison the sum.
+  const totalClaimAmount = claims.reduce((sum, c) => {
+    const n = Number(c.claimAmount);
+    return sum + (Number.isFinite(n) ? n : 0);
+  }, 0);
 
   res.json({
     total: claims.length,

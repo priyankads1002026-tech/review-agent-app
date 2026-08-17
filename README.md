@@ -38,7 +38,7 @@ review-agent-app/
 1. Developer opens (or pushes to) a PR on this repo
 2. The GitHub Actions workflow (`.github/workflows/pr-review.yml`) triggers automatically
 3. `scripts/review.js` fetches the PR title, description, and diff via the GitHub API
-4. Anthropic Claude (`claude-opus-4-8`) analyzes the changes and produces:
+4. Anthropic Claude (`claude-opus-4-1`) analyzes the changes and produces:
    - **📋 PR Summary** — what changed, mapping each file to the use case it affects
    - **🔴 Critical / 🟡 Warnings / 🟢 Suggestions** — the review findings
    - **✅ Verdict** — APPROVED / APPROVED WITH COMMENTS / CHANGES REQUESTED
