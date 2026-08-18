@@ -1,4 +1,4 @@
-// Local test runner for the PR review agent (Google Gemini).
+// Local test runner for the PR review agent (Anthropic Claude).
 //
 // Runs the SAME review prompt the GitHub Action uses, but against a local
 // sample diff — no GitHub, no PR needed. Prints the review to your terminal.
@@ -6,22 +6,22 @@
 // Usage (PowerShell):
 //   cd scripts
 //   npm install
-//   $env:GEMINI_API_KEY = "AIza..."          # your Gemini API key
+//   $env:ANTHROPIC_API_KEY = "sk-ant-..."      # your Anthropic API key
 //   npm run test:review                        # uses sample.diff
 //   npm run test:review -- ../some.diff        # or point at another diff file
 
 const fs = require("fs");
 const path = require("path");
 const { buildPrompt } = require("./reviewPrompt");
-const { MODEL, runReview } = require("./gemini");
+const { MODEL, runReview } = require("./claude");
 
 async function main() {
-  const apiKey = process.env.GEMINI_API_KEY;
+  const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     console.error(
-      "❌ GEMINI_API_KEY is not set.\n" +
-        '   PowerShell:  $env:GEMINI_API_KEY = "AIza..."\n' +
-        "   Get a key at: https://aistudio.google.com/apikey\n" +
+      "❌ ANTHROPIC_API_KEY is not set.\n" +
+        '   PowerShell:  $env:ANTHROPIC_API_KEY = "sk-ant-..."\n' +
+        "   Get a key at: https://console.anthropic.com/settings/keys\n" +
         "   then re-run:  npm run test:review"
     );
     process.exit(1);
@@ -55,7 +55,7 @@ async function main() {
 
   const prompt = buildPrompt({ prNumber, title, author, body, fileTable, diffSummary });
 
-  console.log(`🤖 Sending sample diff to Google Gemini (${MODEL}) ...\n`);
+  console.log(`🤖 Sending sample diff to Anthropic Claude (${MODEL}) ...\n`);
 
   const { text, usage } = await runReview(prompt, apiKey);
   console.log(text || "(no text returned)");

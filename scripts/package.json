@@ -7,7 +7,7 @@
     "test:review": "node review.local.js"
   },
   "dependencies": {
-    "@google/genai": "^2.11.0",
+    "@anthropic-ai/sdk": "^0.114.0",
     "@octokit/rest": "^22.0.1"
   }
 }

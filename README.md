@@ -38,7 +38,7 @@ review-agent-app/
 1. Developer opens (or pushes to) a PR on this repo
 2. The GitHub Actions workflow (`.github/workflows/pr-review.yml`) triggers automatically
 3. `scripts/review.js` fetches the PR title, description, and diff via the GitHub API
-4. Google Gemini (`gemini-2.5-pro`) analyzes the changes and produces:
+4. Anthropic Claude (`claude-opus-4-8`) analyzes the changes and produces:
    - **📋 PR Summary** — what changed, mapping each file to the use case it affects
    - **🔴 Critical / 🟡 Warnings / 🟢 Suggestions** — the review findings
    - **✅ Verdict** — APPROVED / APPROVED WITH COMMENTS / CHANGES REQUESTED
@@ -51,8 +51,8 @@ review-agent-app/
 
 ### Add GitHub Secret
 Go to repo Settings → Secrets and variables → Actions → New repository secret:
-- Name: `GEMINI_API_KEY`
-- Value: your key from https://aistudio.google.com/apikey
+- Name: `ANTHROPIC_API_KEY`
+- Value: your key from https://console.anthropic.com/settings/keys
 
 The workflow uses the built-in `GITHUB_TOKEN` (granted `pull-requests: write` + `issues: write`) to post the comment — no extra token needed.
 
@@ -61,7 +61,7 @@ Run the same review prompt against a sample diff on your machine to confirm your
 ```
 cd scripts
 npm install
-$env:GEMINI_API_KEY = "AIza..."           # PowerShell
+$env:ANTHROPIC_API_KEY = "sk-ant-..."     # PowerShell
 npm run test:review                         # reviews scripts/sample.diff
 ```
 Edit `scripts/sample.diff` to try your own changes, or pass another diff file: `npm run test:review -- ../path/to.diff`. The review prints to your terminal — nothing is posted anywhere.

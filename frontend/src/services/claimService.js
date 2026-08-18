@@ -6,6 +6,12 @@ export const fetchClaims = async () => {
   return response.json();
 };
 
+export const fetchClaimSummary = async () => {
+  const response = await fetch(`${BASE_URL}/summary`);
+  if (!response.ok) throw new Error("Failed to fetch claim summary");
+  return response.json();
+};
+
 export const fetchClaimById = async (id) => {
   const response = await fetch(`${BASE_URL}/${id}`);
   if (!response.ok) throw new Error("Claim not found");
