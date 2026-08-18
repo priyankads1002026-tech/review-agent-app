@@ -4,7 +4,7 @@
 
 const Anthropic = require("@anthropic-ai/sdk");
 
-const MODEL = "claude-opus-4-1";
+const MODEL = "claude-opus-4-8";
 
 // Runs the review prompt through Claude and returns { text, usage }.
 async function runReview(prompt, apiKey) {
