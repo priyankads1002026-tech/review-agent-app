@@ -3,6 +3,43 @@
 A full-stack POC application for managing insurance claim billing requests, 
 built with Node.js + Express (backend) and React + Vite (frontend).
 
+## Use Case Summary
+
+This repository has one main idea: **AI-assisted PR review automation**.
+The app includes a small claims-management product so there is realistic code
+for the reviewer to analyze, but the central workflow is the review agent that
+inspects every pull request and posts a structured comment.
+
+### Primary use case: automated PR reviews
+
+- A developer opens or updates a PR in this repository.
+- GitHub Actions triggers `scripts/review.js`.
+- The script collects the PR title, description, changed files, and diff.
+- Claude analyzes the change set and generates a review with:
+    - PR summary
+    - critical issues
+    - warnings
+    - suggestions
+    - an approval verdict
+    - a copy-paste fix prompt
+- The result is posted as one sticky PR comment, so the latest review always
+    stays attached to the pull request.
+
+### Supporting use case: claims billing demo app
+
+- The backend exposes CRUD-style claim endpoints plus a summary endpoint.
+- The frontend lets a user submit claims, list claims, filter by status or
+    policy number, update claim status, and delete claims.
+- The dashboard shows aggregate counts and total claim amount.
+- Data lives in memory, so the app is meant for demonstration rather than
+    production persistence.
+
+### Why this project exists
+
+The claims app provides a realistic business domain, while the PR review agent
+demonstrates how AI can be used to summarize changes, spot risks, and guide
+developers during code review.
+
 ---
 
 ## Project Structure
