@@ -1,11 +1,30 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ClaimList from "./components/ClaimList";
 import ClaimForm from "./components/ClaimForm";
 import ClaimSummary from "./components/ClaimSummary";
 
+// Resolve the initial theme: saved preference first, else the OS setting, else light.
+const getInitialTheme = () => {
+  const saved = localStorage.getItem("theme");
+  if (saved === "light" || saved === "dark") return saved;
+  return window.matchMedia?.("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
+};
+
 function App() {
   const [activeTab, setActiveTab] = useState("list");
   const [refresh, setRefresh] = useState(0);
+  const [theme, setTheme] = useState(getInitialTheme);
+
+  // Apply the theme to the document root and remember the choice.
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+
+  const toggleTheme = () =>
+    setTheme((t) => (t === "dark" ? "light" : "dark"));
 
   const handleClaimCreated = () => {
     setActiveTab("list");
@@ -21,6 +40,14 @@ function App() {
             <h1>Claim Billing Request System</h1>
             <p>Manage and review insurance claim billing requests</p>
           </div>
+          <button
+            className="theme-toggle"
+            onClick={toggleTheme}
+            aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
+            title={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
+          >
+            {theme === "dark" ? "☀️ Light" : "🌙 Dark"}
+          </button>
         </div>
       </header>
 

@@ -46,8 +46,13 @@ function ClaimList() {
       }
       setClaims(data);
     } catch (err) {
+      // A TypeError from fetch means the backend was unreachable; anything else
+      // (a non-2xx response) means the server was reached but rejected the request.
+      const unreachable = err instanceof TypeError;
       setError(
-        "Could not reach the backend API. Make sure it is running at http://localhost:8080."
+        unreachable
+          ? "Could not reach the backend API. Make sure it is running at http://localhost:8080."
+          : "The request failed on the server. Please try again."
       );
     } finally {
       setLoading(false);
@@ -101,6 +106,14 @@ function ClaimList() {
   const count = (s) => claims.filter((c) => c.status === s).length;
   const totalAmount = claims.reduce((sum, c) => sum + (Number(c.claimAmount) || 0), 0);
 
+  // Human-readable description of the active filter (null when showing all).
+  const filterLabel =
+    filter.type === "status"
+      ? `status "${filter.value}"`
+      : filter.type === "policy"
+      ? `policy "${filter.value}"`
+      : null;
+
   if (loading) {
     return (
       <div className="card">
@@ -143,6 +156,13 @@ function ClaimList() {
           <div className="stat__value">{money(totalAmount)}</div>
         </div>
       </div>
+
+      {filterLabel && (
+        <p className="filter-note">
+          Showing {claims.length} result{claims.length === 1 ? "" : "s"} for{" "}
+          {filterLabel} — the stats above reflect this filter, not all claims.
+        </p>
+      )}
 
       <div className="card">
         <div className="list-header">
@@ -194,11 +214,26 @@ function ClaimList() {
         </div>
 
         {claims.length === 0 ? (
-          <div className="state">
-            <div className="state__emoji">📭</div>
-            <h3>No claims yet</h3>
-            <p>Submit a new claim to get started.</p>
-          </div>
+          filterLabel ? (
+            <div className="state">
+              <div className="state__emoji">🔍</div>
+              <h3>No claims match {filterLabel}</h3>
+              <p>Try a different filter, or clear it to see all claims.</p>
+              <button
+                className="btn btn--sm btn--ghost"
+                onClick={clearFilters}
+                style={{ marginTop: 12 }}
+              >
+                Clear filters
+              </button>
+            </div>
+          ) : (
+            <div className="state">
+              <div className="state__emoji">📭</div>
+              <h3>No claims yet</h3>
+              <p>Submit a new claim to get started.</p>
+            </div>
+          )
         ) : (
           <div className="table-wrap">
             <table className="claims">
