@@ -26,7 +26,10 @@ function EditClaimModal({ claim, onClose, onSaved }) {
       setError("Patient name, policy number and amount are required.");
       return;
     }
-    if (Number(form.claimAmount) <= 0) {
+    // parseFloat("abc") is NaN, and NaN <= 0 is false — guard it explicitly so
+    // a non-numeric amount is rejected here instead of sending NaN to the API.
+    const amount = parseFloat(form.claimAmount);
+    if (Number.isNaN(amount) || amount <= 0) {
       setError("Claim amount must be greater than zero.");
       return;
     }
@@ -36,7 +39,7 @@ function EditClaimModal({ claim, onClose, onSaved }) {
       await updateClaim(claim.id, {
         patientName: form.patientName,
         policyNumber: form.policyNumber,
-        claimAmount: parseFloat(form.claimAmount),
+        claimAmount: amount,
         description: form.description,
       });
       onSaved();

@@ -16,6 +16,32 @@ let nextId = 1;
 
 const today = () => new Date().toISOString().slice(0, 10); // YYYY-MM-DD
 
+// Validate + normalize the editable fields shared by POST and PUT. Returns
+// { error } on failure, or { value } with a Number-coerced claimAmount and a
+// string description on success. id/status/submittedDate are the caller's job.
+function validateClaimInput(body) {
+  const { patientName, policyNumber, claimAmount, description } = body || {};
+  const amount = Number(claimAmount);
+  if (
+    typeof patientName !== "string" || patientName.trim() === "" ||
+    typeof policyNumber !== "string" || policyNumber.trim() === "" ||
+    !Number.isFinite(amount) || amount <= 0
+  ) {
+    return {
+      error:
+        "patientName and policyNumber must be non-empty strings and claimAmount must be a positive number",
+    };
+  }
+  return {
+    value: {
+      patientName,
+      policyNumber,
+      claimAmount: amount,
+      description: typeof description === "string" ? description : "",
+    },
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Routes  (base path: /api/claims)
 // ---------------------------------------------------------------------------
@@ -71,13 +97,11 @@ app.get("/api/claims/:id", (req, res) => {
 
 // POST /api/claims  -> create a claim (status defaults to PENDING)
 app.post("/api/claims", (req, res) => {
-  const { patientName, policyNumber, claimAmount, description } = req.body;
+  const { error, value } = validateClaimInput(req.body);
+  if (error) return res.status(400).json({ error });
   const claim = {
     id: nextId++,
-    patientName,
-    policyNumber,
-    claimAmount,
-    description,
+    ...value,
     status: "PENDING",
     submittedDate: today(),
   };
@@ -105,11 +129,10 @@ app.put("/api/claims/:id", (req, res) => {
       .status(404)
       .json({ error: `Claim not found with id: ${req.params.id}` });
   }
-  const { patientName, policyNumber, claimAmount, description } = req.body;
-  claim.patientName = patientName;
-  claim.policyNumber = policyNumber;
-  claim.claimAmount = claimAmount;
-  claim.description = description;
+  const { error, value } = validateClaimInput(req.body);
+  if (error) return res.status(400).json({ error });
+  // Assign only the validated fields; id, status, submittedDate stay untouched.
+  Object.assign(claim, value);
   res.json(claim);
 });
 

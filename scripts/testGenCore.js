@@ -64,8 +64,16 @@ function parseTestBlocks(text) {
 
 function writeGeneratedFiles(blocks, repoRoot) {
   const written = [];
+  const root = path.resolve(repoRoot);
   for (const b of blocks) {
-    const abs = path.join(repoRoot, b.testPath);
+    // testPath comes from the model — resolve it and reject anything that
+    // escapes repoRoot (e.g. "../.github/workflows/x") so a crafted PR can't
+    // coax an arbitrary file write in CI.
+    const abs = path.resolve(root, b.testPath);
+    if (abs !== root && !abs.startsWith(root + path.sep)) {
+      console.warn(`Skipping test file outside repo root: ${b.testPath}`);
+      continue;
+    }
     fs.mkdirSync(path.dirname(abs), { recursive: true });
     fs.writeFileSync(abs, b.content, "utf8");
     written.push(b.testPath);

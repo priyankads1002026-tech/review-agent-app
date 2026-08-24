@@ -16,6 +16,10 @@ const getInitialTheme = () => {
 function App() {
   const [activeTab, setActiveTab] = useState("list");
   const [refresh, setRefresh] = useState(0);
+  // Bumped on any claim mutation so the Dashboard's aggregates stay fresh,
+  // kept separate from `refresh` so mutations don't remount (and reset the
+  // filters/search/sort/pagination of) the claims list.
+  const [summaryRefresh, setSummaryRefresh] = useState(0);
   const [theme, setTheme] = useState(getInitialTheme);
 
   // Apply the theme to the document root and remember the choice.
@@ -30,7 +34,12 @@ function App() {
   const handleClaimCreated = () => {
     setActiveTab("list");
     setRefresh((r) => r + 1);
+    setSummaryRefresh((n) => n + 1);
   };
+
+  // Called by ClaimList after an edit/delete/status change so the Dashboard
+  // re-fetches its aggregates next time it renders.
+  const handleClaimsChanged = () => setSummaryRefresh((n) => n + 1);
 
   return (
     <>
@@ -88,8 +97,12 @@ function App() {
           </button>
         </nav>
 
-        {activeTab === "dashboard" && <ClaimSummary key={refresh} />}
-        {activeTab === "list" && <ClaimList key={refresh} />}
+        {activeTab === "dashboard" && (
+          <ClaimSummary key={`${refresh}-${summaryRefresh}`} />
+        )}
+        {activeTab === "list" && (
+          <ClaimList key={refresh} onChanged={handleClaimsChanged} />
+        )}
         {activeTab === "new" && <ClaimForm onClaimCreated={handleClaimCreated} />}
         {activeTab === "guide" && <HelpGuide />}
       </main>

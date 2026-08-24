@@ -51,7 +51,7 @@ function SortableTh({ label, sortKey, sort, onSort }) {
   );
 }
 
-function ClaimList() {
+function ClaimList({ onChanged = () => {} }) {
   const [claims, setClaims] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -109,6 +109,7 @@ function ClaimList() {
     try {
       await updateClaimStatus(id, status);
       await loadClaims();
+      onChanged();
     } catch (err) {
       setError("Failed to update status. Is the backend running?");
     } finally {
@@ -123,6 +124,7 @@ function ClaimList() {
     try {
       await deleteClaim(id);
       await loadClaims();
+      onChanged();
     } catch (err) {
       setError("Failed to delete claim. Is the backend running?");
     } finally {
@@ -475,6 +477,7 @@ function ClaimList() {
           onSaved={() => {
             setEditing(null);
             loadClaims();
+            onChanged();
           }}
         />
       )}
