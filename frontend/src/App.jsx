@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import ClaimList from "./components/ClaimList";
 import ClaimForm from "./components/ClaimForm";
 import ClaimSummary from "./components/ClaimSummary";
+import HelpGuide from "./components/HelpGuide";
 
 // Resolve the initial theme: saved preference first, else the OS setting, else light.
 const getInitialTheme = () => {
@@ -77,11 +78,20 @@ function App() {
           >
             Submit New Claim
           </button>
+          <button
+            className={`tab ${activeTab === "guide" ? "is-active" : ""}`}
+            onClick={() => setActiveTab("guide")}
+            role="tab"
+            aria-selected={activeTab === "guide"}
+          >
+            Guide
+          </button>
         </nav>
 
         {activeTab === "dashboard" && <ClaimSummary key={refresh} />}
         {activeTab === "list" && <ClaimList key={refresh} />}
         {activeTab === "new" && <ClaimForm onClaimCreated={handleClaimCreated} />}
+        {activeTab === "guide" && <HelpGuide />}
       </main>
     </>
   );

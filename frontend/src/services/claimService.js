@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:8080/api/claims";
+const BASE_URL = "http://localhost:8081/api/claims"; // TEMP local dev override (8080 in use); revert to 8080 before commit
 
 export const fetchClaims = async () => {
   const response = await fetch(BASE_URL);
@@ -47,6 +47,16 @@ export const updateClaimStatus = async (id, status) => {
     method: "PUT",
   });
   if (!response.ok) throw new Error("Failed to update claim status");
+  return response.json();
+};
+
+export const updateClaim = async (id, claim) => {
+  const response = await fetch(`${BASE_URL}/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(claim),
+  });
+  if (!response.ok) throw new Error("Failed to update claim");
   return response.json();
 };
 

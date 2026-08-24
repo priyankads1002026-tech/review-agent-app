@@ -207,6 +207,41 @@ table.claims tbody tr:hover { background: var(--row-hover); }
 .cell-amount { font-variant-numeric: tabular-nums; font-weight: 600; }
 .cell-muted { color: var(--ink-500); }
 
+/* Sortable column headers — the th keeps its uppercase style; the inner button
+   carries the click target and hover/active affordance. */
+table.claims thead th.sortable { padding: 0; }
+.sortable__btn {
+  width: 100%;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: inherit;
+  cursor: pointer;
+  padding: 12px 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.sortable__btn:hover { color: var(--brand-700); }
+.sortable--active .sortable__btn { color: var(--brand-700); }
+.sortable__ind { font-size: 10px; line-height: 1; }
+
+/* ---------------- Pagination ---------------- */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+.pagination__info { font-size: 13px; color: var(--ink-500); margin-right: auto; }
+
 /* ---------------- Status badges ---------------- */
 .badge {
   display: inline-flex;
@@ -253,6 +288,48 @@ table.claims tbody tr:hover { background: var(--row-hover); }
 .btn--reject:hover:not(:disabled) { background: var(--warn-bg-strong); }
 .btn--delete { background: var(--danger-bg); color: var(--danger); }
 .btn--delete:hover:not(:disabled) { background: var(--danger-bg-strong); }
+.btn--edit { background: var(--brand-100); color: var(--brand-700); }
+.btn--edit:hover:not(:disabled) { background: var(--brand-500); color: #fff; }
+
+/* ---------------- Modal ---------------- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  z-index: 1000;
+}
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 560px;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  padding: 22px 24px;
+}
+.modal__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+.modal__close {
+  line-height: 1;
+  flex-shrink: 0;
+}
+.modal__body { margin-top: 4px; }
+.modal__footer {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
 
 /* ---------------- Form ---------------- */
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 18px; }
@@ -376,9 +453,106 @@ table.claims tbody tr:hover { background: var(--row-hover); }
 }
 .theme-toggle:hover { background: rgba(255, 255, 255, 0.24); border-color: rgba(255, 255, 255, 0.6); }
 
+/* ---------------- Detail drawer ---------------- */
+/* Clickable claim id in the table — looks like a link, keyboard-focusable. */
+.link-id {
+  border: 0;
+  background: none;
+  font: inherit;
+  color: var(--brand-600);
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+.link-id:hover { text-decoration: underline; color: var(--brand-700); }
+
+/* Full-screen scrim; drawer slides in from the right. z-index sits above the
+   header/modal stack (no shared z-index token exists, so pick an explicit value). */
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  display: flex;
+  justify-content: flex-end;
+  z-index: 1100;
+}
+.drawer {
+  width: 100%;
+  max-width: 440px;
+  height: 100%;
+  background: var(--surface);
+  border-left: 1px solid var(--line);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  animation: drawer-in 0.22s ease;
+}
+@keyframes drawer-in {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+.drawer__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 22px;
+  border-bottom: 1px solid var(--line);
+}
+.drawer__close { line-height: 1; padding: 6px 10px; flex-shrink: 0; }
+.drawer__body { padding: 20px 22px; }
+
+.detail-list { margin: 0; }
+.detail-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+.detail-row:last-child { border-bottom: 0; }
+.detail-row__label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-500);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+.detail-row__value {
+  margin: 0;
+  font-size: 14px;
+  color: var(--ink-900);
+  text-align: right;
+  word-break: break-word;
+}
+/* Description reads better stacked full-width and left-aligned. */
+.detail-row--stacked { flex-direction: column; align-items: stretch; }
+.detail-row--stacked .detail-row__value { text-align: left; }
+
+/* ---------------- Guide ---------------- */
+/* Static help tab. Reuses .card; these rules only tidy body copy spacing and
+   inline <code>, using existing CSS variables so both themes work. */
+.guide p { color: var(--ink-700); margin: 0 0 10px; }
+.guide p:last-child { margin-bottom: 0; }
+.guide ul { color: var(--ink-700); margin: 0; padding-left: 20px; }
+.guide li { margin-bottom: 8px; }
+.guide li:last-child { margin-bottom: 0; }
+.guide code {
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 1px 6px;
+  font-size: 0.9em;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+}
+
 /* ---------------- Responsive ---------------- */
 @media (max-width: 640px) {
   .form-grid { grid-template-columns: 1fr; }
   .app-header__inner, .page { padding-left: 16px; padding-right: 16px; }
   .filter-bar { flex-direction: column; align-items: stretch; }
+  .drawer { max-width: 100%; }
 }

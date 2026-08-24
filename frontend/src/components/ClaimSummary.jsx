@@ -56,6 +56,18 @@ function ClaimSummary() {
 
   return (
     <>
+      <div className="list-header">
+        <div>
+          <h2 className="card__title">Claims Summary</h2>
+          <p className="card__subtitle" style={{ marginBottom: 0 }}>
+            Aggregate stats computed by the backend (/api/claims/summary)
+          </p>
+        </div>
+        <button className="btn btn--ghost" onClick={loadSummary}>
+          ↻ Refresh
+        </button>
+      </div>
+
       <div className="stats">
         <div className="stat stat--total">
           <div className="stat__label">Total Claims</div>
@@ -76,20 +88,6 @@ function ClaimSummary() {
         <div className="stat stat--total">
           <div className="stat__label">Total Amount</div>
           <div className="stat__value">{money(summary?.totalClaimAmount)}</div>
-        </div>
-      </div>
-
-      <div className="card">
-        <div className="list-header">
-          <div>
-            <h2 className="card__title">Claims Summary</h2>
-            <p className="card__subtitle">
-              Aggregate stats computed by the backend (/api/claims/summary)
-            </p>
-          </div>
-          <button className="btn btn--ghost" onClick={loadSummary}>
-            ↻ Refresh
-          </button>
         </div>
       </div>
     </>

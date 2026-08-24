@@ -97,12 +97,34 @@ app.put("/api/claims/:id/status", (req, res) => {
   res.json(claim);
 });
 
+// PUT /api/claims/:id  -> update editable fields (id, status, submittedDate preserved)
+app.put("/api/claims/:id", (req, res) => {
+  const claim = claims.find((c) => c.id === Number(req.params.id));
+  if (!claim) {
+    return res
+      .status(404)
+      .json({ error: `Claim not found with id: ${req.params.id}` });
+  }
+  const { patientName, policyNumber, claimAmount, description } = req.body;
+  claim.patientName = patientName;
+  claim.policyNumber = policyNumber;
+  claim.claimAmount = claimAmount;
+  claim.description = description;
+  res.json(claim);
+});
+
 // DELETE /api/claims/:id  -> remove a claim (204 No Content)
 app.delete("/api/claims/:id", (req, res) => {
   claims = claims.filter((c) => c.id !== Number(req.params.id));
   res.status(204).send();
 });
 
-app.listen(PORT, () => {
-  console.log(`Claim Billing API running at http://localhost:${PORT}/api/claims`);
-});
+// Skip binding a real port under the test runner so Supertest can drive `app`
+// directly (in-process) without a port conflict.
+if (process.env.NODE_ENV !== "test") {
+  app.listen(PORT, () => {
+    console.log(`Claim Billing API running at http://localhost:${PORT}/api/claims`);
+  });
+}
+
+export { app };

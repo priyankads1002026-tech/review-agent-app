@@ -6,8 +6,9 @@ const Anthropic = require("@anthropic-ai/sdk");
 
 const MODEL = "claude-opus-4-8";
 
-// Runs the review prompt through Claude and returns { text, usage }.
-async function runReview(prompt, apiKey) {
+// Runs a prompt through Claude and returns { text, usage }. Provider-agnostic
+// callers (review.js, generateTests.js, and their .local.js runners) share this.
+async function runPrompt(prompt, apiKey) {
   const client = new Anthropic({ apiKey });
 
   const response = await client.messages.create({
@@ -34,4 +35,4 @@ async function runReview(prompt, apiKey) {
   return { text, usage };
 }
 
-module.exports = { MODEL, runReview };
+module.exports = { MODEL, runPrompt };
