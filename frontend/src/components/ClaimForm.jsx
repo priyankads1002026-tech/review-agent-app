@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { createClaim } from "../services/claimService";
 
 function ClaimForm({ onClaimCreated }) {
+  const { t } = useTranslation();
   const [form, setForm] = useState({
     patientName: "",
     policyNumber: "",
@@ -22,11 +24,11 @@ function ClaimForm({ onClaimCreated }) {
     setSuccess(false);
 
     if (!form.patientName || !form.policyNumber || !form.claimAmount) {
-      setError("Patient name, policy number and amount are required.");
+      setError(t("form.errors.required"));
       return;
     }
     if (Number(form.claimAmount) <= 0) {
-      setError("Claim amount must be greater than zero.");
+      setError(t("form.errors.amount"));
       return;
     }
 
@@ -40,7 +42,7 @@ function ClaimForm({ onClaimCreated }) {
       setForm({ patientName: "", policyNumber: "", claimAmount: "", description: "" });
       if (onClaimCreated) onClaimCreated();
     } catch (err) {
-      setError("Failed to submit claim. Make sure the backend is running at http://localhost:8080.");
+      setError(t("form.errors.submit"));
     } finally {
       setSubmitting(false);
     }
@@ -48,8 +50,8 @@ function ClaimForm({ onClaimCreated }) {
 
   return (
     <div className="card" style={{ maxWidth: 720 }}>
-      <h2 className="card__title">Submit New Claim</h2>
-      <p className="card__subtitle">Fields marked with * are required</p>
+      <h2 className="card__title">{t("form.title")}</h2>
+      <p className="card__subtitle">{t("form.subtitle")}</p>
 
       {error && (
         <div className="alert alert--error">
@@ -60,32 +62,32 @@ function ClaimForm({ onClaimCreated }) {
       {success && (
         <div className="alert alert--success">
           <span className="alert__icon">✅</span>
-          <span>Claim submitted successfully!</span>
+          <span>{t("form.success")}</span>
         </div>
       )}
 
       <form onSubmit={handleSubmit}>
         <div className="form-grid">
           <div className="field">
-            <label>Patient Name <span className="req">*</span></label>
+            <label>{t("fields.patientName")} <span className="req">*</span></label>
             <input
               name="patientName"
               value={form.patientName}
               onChange={handleChange}
-              placeholder="e.g. Jane Doe"
+              placeholder={t("form.patientPlaceholder")}
             />
           </div>
           <div className="field">
-            <label>Policy Number <span className="req">*</span></label>
+            <label>{t("fields.policyNumber")} <span className="req">*</span></label>
             <input
               name="policyNumber"
               value={form.policyNumber}
               onChange={handleChange}
-              placeholder="e.g. POL-100234"
+              placeholder={t("form.policyPlaceholder")}
             />
           </div>
           <div className="field">
-            <label>Claim Amount ($) <span className="req">*</span></label>
+            <label>{t("fields.claimAmount")} <span className="req">*</span></label>
             <input
               name="claimAmount"
               type="number"
@@ -93,24 +95,24 @@ function ClaimForm({ onClaimCreated }) {
               step="0.01"
               value={form.claimAmount}
               onChange={handleChange}
-              placeholder="0.00"
+              placeholder={t("form.amountPlaceholder")}
             />
           </div>
           <div className="field full">
-            <label>Description</label>
+            <label>{t("fields.description")}</label>
             <textarea
               name="description"
               value={form.description}
               onChange={handleChange}
               rows={3}
-              placeholder="Brief description of the claim (optional)"
+              placeholder={t("form.descPlaceholder")}
             />
           </div>
         </div>
 
         <div className="form-actions">
           <button className="btn btn--primary btn--lg" type="submit" disabled={submitting}>
-            {submitting ? "Submitting…" : "Submit Claim"}
+            {submitting ? t("form.submitting") : t("form.submit")}
           </button>
         </div>
       </form>

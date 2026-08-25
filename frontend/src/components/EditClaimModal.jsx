@@ -1,10 +1,12 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { updateClaim } from "../services/claimService";
 
 // Prefilled modal for fully editing a claim's editable fields
 // (patientName, policyNumber, claimAmount, description). id/status/
 // submittedDate are preserved by the backend and never touched here.
 function EditClaimModal({ claim, onClose, onSaved }) {
+  const { t } = useTranslation();
   const [form, setForm] = useState({
     patientName: claim.patientName ?? "",
     policyNumber: claim.policyNumber ?? "",
@@ -23,14 +25,14 @@ function EditClaimModal({ claim, onClose, onSaved }) {
     setError(null);
 
     if (!form.patientName || !form.policyNumber || !form.claimAmount) {
-      setError("Patient name, policy number and amount are required.");
+      setError(t("edit.errors.required"));
       return;
     }
     // parseFloat("abc") is NaN, and NaN <= 0 is false — guard it explicitly so
     // a non-numeric amount is rejected here instead of sending NaN to the API.
     const amount = parseFloat(form.claimAmount);
     if (Number.isNaN(amount) || amount <= 0) {
-      setError("Claim amount must be greater than zero.");
+      setError(t("edit.errors.amount"));
       return;
     }
 
@@ -44,7 +46,7 @@ function EditClaimModal({ claim, onClose, onSaved }) {
       });
       onSaved();
     } catch (err) {
-      setError("Failed to save changes. Make sure the backend is running.");
+      setError(t("edit.errors.save"));
     } finally {
       setSaving(false);
     }
@@ -60,14 +62,14 @@ function EditClaimModal({ claim, onClose, onSaved }) {
       >
         <div className="modal__header">
           <div>
-            <h2 className="card__title">Edit Claim #{claim.id}</h2>
-            <p className="card__subtitle">Fields marked with * are required</p>
+            <h2 className="card__title">{t("edit.titleWithId", { id: claim.id })}</h2>
+            <p className="card__subtitle">{t("edit.subtitle")}</p>
           </div>
           <button
             className="modal__close btn btn--ghost btn--sm"
             type="button"
             onClick={onClose}
-            aria-label="Close"
+            aria-label={t("actions.close")}
           >
             ✕
           </button>
@@ -84,25 +86,25 @@ function EditClaimModal({ claim, onClose, onSaved }) {
           <form onSubmit={handleSubmit}>
             <div className="form-grid">
               <div className="field">
-                <label>Patient Name <span className="req">*</span></label>
+                <label>{t("fields.patientName")} <span className="req">*</span></label>
                 <input
                   name="patientName"
                   value={form.patientName}
                   onChange={handleChange}
-                  placeholder="e.g. Jane Doe"
+                  placeholder={t("form.patientPlaceholder")}
                 />
               </div>
               <div className="field">
-                <label>Policy Number <span className="req">*</span></label>
+                <label>{t("fields.policyNumber")} <span className="req">*</span></label>
                 <input
                   name="policyNumber"
                   value={form.policyNumber}
                   onChange={handleChange}
-                  placeholder="e.g. POL-100234"
+                  placeholder={t("form.policyPlaceholder")}
                 />
               </div>
               <div className="field">
-                <label>Claim Amount ($) <span className="req">*</span></label>
+                <label>{t("fields.claimAmount")} <span className="req">*</span></label>
                 <input
                   name="claimAmount"
                   type="number"
@@ -110,17 +112,17 @@ function EditClaimModal({ claim, onClose, onSaved }) {
                   step="0.01"
                   value={form.claimAmount}
                   onChange={handleChange}
-                  placeholder="0.00"
+                  placeholder={t("form.amountPlaceholder")}
                 />
               </div>
               <div className="field full">
-                <label>Description</label>
+                <label>{t("fields.description")}</label>
                 <textarea
                   name="description"
                   value={form.description}
                   onChange={handleChange}
                   rows={3}
-                  placeholder="Brief description of the claim (optional)"
+                  placeholder={t("form.descPlaceholder")}
                 />
               </div>
             </div>
@@ -132,10 +134,10 @@ function EditClaimModal({ claim, onClose, onSaved }) {
                 onClick={onClose}
                 disabled={saving}
               >
-                Cancel
+                {t("actions.cancel")}
               </button>
               <button className="btn btn--primary" type="submit" disabled={saving}>
-                {saving ? "Saving…" : "Save Changes"}
+                {saving ? t("edit.saving") : t("edit.save")}
               </button>
             </div>
           </form>

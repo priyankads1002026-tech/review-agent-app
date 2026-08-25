@@ -1,0 +1,188 @@
+{
+  "app": {
+    "title": "Claim Billing Request System",
+    "subtitle": "Manage and review insurance claim billing requests"
+  },
+  "theme": {
+    "toLight": "Switch to light theme",
+    "toDark": "Switch to dark theme",
+    "light": "☀️ Light",
+    "dark": "🌙 Dark"
+  },
+  "lang": {
+    "label": "Language"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "viewClaims": "View Claims",
+    "submitNew": "Submit New Claim",
+    "guide": "Guide"
+  },
+  "actions": {
+    "refresh": "↻ Refresh",
+    "search": "Search",
+    "view": "View",
+    "approve": "Approve",
+    "reject": "Reject",
+    "edit": "Edit",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "close": "Close",
+    "save": "Save Changes",
+    "clearFilters": "Clear filters",
+    "clearSearch": "Clear search",
+    "prev": "← Prev",
+    "next": "Next →"
+  },
+  "status": {
+    "pending": "pending",
+    "approved": "approved",
+    "rejected": "rejected",
+    "unknown": "unknown",
+    "all": "All statuses"
+  },
+  "fields": {
+    "id": "ID",
+    "patientName": "Patient Name",
+    "policyNumber": "Policy Number",
+    "policyNo": "Policy No.",
+    "amount": "Amount",
+    "claimAmount": "Claim Amount ($)",
+    "description": "Description",
+    "status": "Status",
+    "submitted": "Submitted",
+    "actions": "Actions"
+  },
+  "list": {
+    "title": "All Claims",
+    "subtitle": "Review, approve, reject or remove claims",
+    "searchLabel": "Search",
+    "searchPlaceholder": "Name, policy or description",
+    "statusLabel": "Status",
+    "policyLabel": "Policy No.",
+    "policyPlaceholder": "e.g. POL-1001",
+    "loading": "Loading claims…",
+    "deleteConfirm": "Delete this claim? This cannot be undone.",
+    "viewDetails": "View claim details",
+    "filterStatus": "status \"{{value}}\"",
+    "filterPolicy": "policy \"{{value}}\"",
+    "filterNote_one": "Showing {{count}} result for {{label}} — the stats above reflect this filter, not all claims.",
+    "filterNote_other": "Showing {{count}} results for {{label}} — the stats above reflect this filter, not all claims.",
+    "noMatchFilterTitle": "No claims match {{label}}",
+    "noMatchFilterHelp": "Try a different filter, or clear it to see all claims.",
+    "noClaimsTitle": "No claims yet",
+    "noClaimsHelp": "Submit a new claim to get started.",
+    "noSearchTitle": "No claims match “{{term}}”",
+    "noSearchHelp": "Try a different search term.",
+    "pageInfo": "Page {{current}} of {{total}}",
+    "stats": {
+      "total": "Total Claims",
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "totalAmount": "Total Amount"
+    },
+    "errors": {
+      "unreachable": "Could not reach the backend API. Make sure it is running at http://localhost:8080.",
+      "server": "The request failed on the server. Please try again.",
+      "update": "Failed to update status. Is the backend running?",
+      "delete": "Failed to delete claim. Is the backend running?"
+    }
+  },
+  "form": {
+    "title": "Submit New Claim",
+    "subtitle": "Fields marked with * are required",
+    "success": "Claim submitted successfully!",
+    "submit": "Submit Claim",
+    "submitting": "Submitting…",
+    "patientPlaceholder": "e.g. Jane Doe",
+    "policyPlaceholder": "e.g. POL-100234",
+    "amountPlaceholder": "0.00",
+    "descPlaceholder": "Brief description of the claim (optional)",
+    "errors": {
+      "required": "Patient name, policy number and amount are required.",
+      "amount": "Claim amount must be greater than zero.",
+      "submit": "Failed to submit claim. Make sure the backend is running at http://localhost:8080."
+    }
+  },
+  "detail": {
+    "title": "Claim details",
+    "titleWithId": "Claim #{{id}}",
+    "ariaLabel": "Claim details",
+    "loading": "Loading claim…",
+    "error": "Could not load this claim. It may have been deleted.",
+    "claimId": "Claim ID",
+    "noDescription": "No description provided"
+  },
+  "edit": {
+    "titleWithId": "Edit Claim #{{id}}",
+    "subtitle": "Fields marked with * are required",
+    "saving": "Saving…",
+    "save": "Save Changes",
+    "errors": {
+      "required": "Patient name, policy number and amount are required.",
+      "amount": "Claim amount must be greater than zero.",
+      "save": "Failed to save changes. Make sure the backend is running."
+    }
+  },
+  "summary": {
+    "title": "Claims Summary",
+    "subtitle": "Aggregate stats computed by the backend (/api/claims/summary)",
+    "loading": "Loading summary…",
+    "error": "Could not load the summary. Make sure the backend is running at http://localhost:8080."
+  },
+  "guide": {
+    "intro": {
+      "title": "What is this app?",
+      "subtitle": "A quick tour of the Claim Billing Request System",
+      "p1": "This is a proof-of-concept insurance claim billing demo: submit claims, review them, and watch a small dashboard update. Its real purpose is to give the AI PR-review agent realistic code to review — the app exists so there is something meaningful to open pull requests against.",
+      "p2": "Data lives in memory on the backend (http://localhost:8080), so everything resets when the server restarts. Use the tabs above to move between the Dashboard, the claims list, and the submit form."
+    },
+    "submit": {
+      "title": "Submit a new claim",
+      "subtitle": "The \"Submit New Claim\" tab",
+      "items": [
+        "Patient Name, Policy Number and Claim Amount are required (marked with *); Description is optional.",
+        "The amount must be greater than zero.",
+        "New claims start as pending. On success you are taken back to the claims list and the new row appears at the top."
+      ]
+    },
+    "view": {
+      "title": "View, filter, search, sort & paginate",
+      "subtitle": "The \"View Claims\" tab",
+      "items": [
+        "The table lists every claim with ID, patient, policy number, amount, approved / rejected / pending status, and submitted date. Stat tiles above it show live totals.",
+        "Filter by Status with the dropdown, or search by Policy No. using the input plus its Search button. These hit the backend; the stat tiles reflect the active filter, not the full data set. Use Clear filters to reset.",
+        "Search (the free-text box) narrows the loaded rows by patient name, policy number or description — this happens in the browser.",
+        "Sort by clicking a column header (ID, Patient, Amount, Status, Submitted); click again to flip between ascending and descending.",
+        "Long lists paginate — use Prev / Next when more than one page is available.",
+        "Hit ↻ Refresh to reload from the backend."
+      ]
+    },
+    "rowActions": {
+      "title": "Approve, reject, edit, view & delete",
+      "subtitle": "Row actions in the claims table",
+      "items": [
+        "View (or clicking the #id) opens a detail drawer with the full claim, including its description.",
+        "Approve / Reject set the claim's status. The matching button is disabled when the claim is already in that state.",
+        "Edit opens a modal to change the claim's fields and save.",
+        "Delete removes the claim after a confirmation prompt — this cannot be undone."
+      ]
+    },
+    "dashboard": {
+      "title": "Dashboard summary",
+      "subtitle": "The \"Dashboard\" tab",
+      "p1": "The Dashboard shows aggregate totals — total claims, counts by status, and the summed claim amount. These numbers are computed on the server (via /api/claims/summary), which is different from the client-side tallies shown on the claims list. Use ↻ Refresh to recompute after making changes."
+    },
+    "theme": {
+      "title": "Light / dark theme",
+      "subtitle": "The toggle in the header",
+      "p1": "Use the 🌙 Dark / ☀️ Light button in the top-right to switch themes. Your choice is saved in the browser (localStorage), so it sticks between visits. On the very first visit the app follows your operating system's preference."
+    },
+    "language": {
+      "title": "Language",
+      "subtitle": "The selector in the header",
+      "p1": "Use the language selector in the top-right to switch between English, Spanish, Arabic and Hindi. Arabic switches the layout to right-to-left. Your choice is saved in the browser (localStorage) and restored on your next visit."
+    }
+  }
+}

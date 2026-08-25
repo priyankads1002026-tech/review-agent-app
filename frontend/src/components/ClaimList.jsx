@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   fetchClaims,
   fetchClaimsByStatus,
@@ -30,8 +31,13 @@ const money = (n) =>
   );
 
 function StatusBadge({ status }) {
+  const { t } = useTranslation();
   const key = (status || "").toLowerCase();
-  return <span className={`badge badge--${key}`}>{key || "unknown"}</span>;
+  return (
+    <span className={`badge badge--${key}`}>
+      {key ? t(`status.${key}`) : t("status.unknown")}
+    </span>
+  );
 }
 
 // Clickable, keyboard-focusable column header. Shows a ▲/▼ indicator when it is
@@ -52,6 +58,7 @@ function SortableTh({ label, sortKey, sort, onSort }) {
 }
 
 function ClaimList({ onChanged = () => {} }) {
+  const { t } = useTranslation();
   const [claims, setClaims] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -93,11 +100,7 @@ function ClaimList({ onChanged = () => {} }) {
       // A TypeError from fetch means the backend was unreachable; anything else
       // (a non-2xx response) means the server was reached but rejected the request.
       const unreachable = err instanceof TypeError;
-      setError(
-        unreachable
-          ? "Could not reach the backend API. Make sure it is running at http://localhost:8080."
-          : "The request failed on the server. Please try again."
-      );
+      setError(unreachable ? t("list.errors.unreachable") : t("list.errors.server"));
     } finally {
       setLoading(false);
     }
@@ -111,14 +114,14 @@ function ClaimList({ onChanged = () => {} }) {
       await loadClaims();
       onChanged();
     } catch (err) {
-      setError("Failed to update status. Is the backend running?");
+      setError(t("list.errors.update"));
     } finally {
       setBusyId(null);
     }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Delete this claim? This cannot be undone.")) return;
+    if (!window.confirm(t("list.deleteConfirm"))) return;
     setBusyId(id);
     setError(null);
     try {
@@ -126,7 +129,7 @@ function ClaimList({ onChanged = () => {} }) {
       await loadClaims();
       onChanged();
     } catch (err) {
-      setError("Failed to delete claim. Is the backend running?");
+      setError(t("list.errors.delete"));
     } finally {
       setBusyId(null);
     }
@@ -193,9 +196,9 @@ function ClaimList({ onChanged = () => {} }) {
   // Human-readable description of the active filter (null when showing all).
   const filterLabel =
     filter.type === "status"
-      ? `status "${filter.value}"`
+      ? t("list.filterStatus", { value: filter.value })
       : filter.type === "policy"
-      ? `policy "${filter.value}"`
+      ? t("list.filterPolicy", { value: filter.value })
       : null;
 
   if (loading) {
@@ -203,7 +206,7 @@ function ClaimList({ onChanged = () => {} }) {
       <div className="card">
         <div className="state">
           <div className="spinner" />
-          <p>Loading claims…</p>
+          <p>{t("list.loading")}</p>
         </div>
       </div>
     );
@@ -220,89 +223,88 @@ function ClaimList({ onChanged = () => {} }) {
 
       <div className="stats">
         <div className="stat stat--total">
-          <div className="stat__label">Total Claims</div>
+          <div className="stat__label">{t("list.stats.total")}</div>
           <div className="stat__value">{claims.length}</div>
         </div>
         <div className="stat stat--pending">
-          <div className="stat__label">Pending</div>
+          <div className="stat__label">{t("list.stats.pending")}</div>
           <div className="stat__value">{count("PENDING")}</div>
         </div>
         <div className="stat stat--approved">
-          <div className="stat__label">Approved</div>
+          <div className="stat__label">{t("list.stats.approved")}</div>
           <div className="stat__value">{count("APPROVED")}</div>
         </div>
         <div className="stat stat--rejected">
-          <div className="stat__label">Rejected</div>
+          <div className="stat__label">{t("list.stats.rejected")}</div>
           <div className="stat__value">{count("REJECTED")}</div>
         </div>
         <div className="stat stat--total">
-          <div className="stat__label">Total Amount</div>
+          <div className="stat__label">{t("list.stats.totalAmount")}</div>
           <div className="stat__value">{money(totalAmount)}</div>
         </div>
       </div>
 
       {filterLabel && (
         <p className="filter-note">
-          Showing {claims.length} result{claims.length === 1 ? "" : "s"} for{" "}
-          {filterLabel} — the stats above reflect this filter, not all claims.
+          {t("list.filterNote", { count: claims.length, label: filterLabel })}
         </p>
       )}
 
       <div className="card">
         <div className="list-header">
           <div>
-            <h2 className="card__title">All Claims</h2>
-            <p className="card__subtitle">Review, approve, reject or remove claims</p>
+            <h2 className="card__title">{t("list.title")}</h2>
+            <p className="card__subtitle">{t("list.subtitle")}</p>
           </div>
           <button className="btn btn--ghost" onClick={loadClaims}>
-            ↻ Refresh
+            {t("actions.refresh")}
           </button>
         </div>
 
         <div className="filter-bar">
           <label className="filter-field">
-            <span className="filter-field__label">Search</span>
+            <span className="filter-field__label">{t("list.searchLabel")}</span>
             <input
               type="text"
-              placeholder="Name, policy or description"
+              placeholder={t("list.searchPlaceholder")}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </label>
 
           <label className="filter-field">
-            <span className="filter-field__label">Status</span>
+            <span className="filter-field__label">{t("list.statusLabel")}</span>
             <select
               value={filter.type === "status" ? filter.value : ""}
               onChange={(e) => handleStatusFilter(e.target.value)}
             >
-              <option value="">All statuses</option>
+              <option value="">{t("status.all")}</option>
               {STATUS_OPTIONS.map((s) => (
                 <option key={s} value={s}>
-                  {s}
+                  {t(`status.${s.toLowerCase()}`)}
                 </option>
               ))}
             </select>
           </label>
 
           <form className="filter-field" onSubmit={handlePolicySearch}>
-            <span className="filter-field__label">Policy No.</span>
+            <span className="filter-field__label">{t("list.policyLabel")}</span>
             <div className="filter-field__row">
               <input
                 type="text"
-                placeholder="e.g. POL-1001"
+                placeholder={t("list.policyPlaceholder")}
                 value={policyInput}
                 onChange={(e) => setPolicyInput(e.target.value)}
               />
               <button type="submit" className="btn btn--sm">
-                Search
+                {t("actions.search")}
               </button>
             </div>
           </form>
 
           {filter.type !== "all" && (
             <button className="btn btn--sm btn--ghost" onClick={clearFilters}>
-              Clear filters
+              {t("actions.clearFilters")}
             </button>
           )}
         </div>
@@ -311,21 +313,21 @@ function ClaimList({ onChanged = () => {} }) {
           filterLabel ? (
             <div className="state">
               <div className="state__emoji">🔍</div>
-              <h3>No claims match {filterLabel}</h3>
-              <p>Try a different filter, or clear it to see all claims.</p>
+              <h3>{t("list.noMatchFilterTitle", { label: filterLabel })}</h3>
+              <p>{t("list.noMatchFilterHelp")}</p>
               <button
                 className="btn btn--sm btn--ghost"
                 onClick={clearFilters}
                 style={{ marginTop: 12 }}
               >
-                Clear filters
+                {t("actions.clearFilters")}
               </button>
             </div>
           ) : (
             <div className="state">
               <div className="state__emoji">📭</div>
-              <h3>No claims yet</h3>
-              <p>Submit a new claim to get started.</p>
+              <h3>{t("list.noClaimsTitle")}</h3>
+              <p>{t("list.noClaimsHelp")}</p>
             </div>
           )
         ) : (
@@ -333,33 +335,33 @@ function ClaimList({ onChanged = () => {} }) {
             <table className="claims">
               <thead>
                 <tr>
-                  <SortableTh label="ID" sortKey="id" sort={sort} onSort={toggleSort} />
+                  <SortableTh label={t("fields.id")} sortKey="id" sort={sort} onSort={toggleSort} />
                   <SortableTh
-                    label="Patient Name"
+                    label={t("fields.patientName")}
                     sortKey="patientName"
                     sort={sort}
                     onSort={toggleSort}
                   />
-                  <th>Policy No.</th>
+                  <th>{t("fields.policyNo")}</th>
                   <SortableTh
-                    label="Amount"
+                    label={t("fields.amount")}
                     sortKey="claimAmount"
                     sort={sort}
                     onSort={toggleSort}
                   />
                   <SortableTh
-                    label="Status"
+                    label={t("fields.status")}
                     sortKey="status"
                     sort={sort}
                     onSort={toggleSort}
                   />
                   <SortableTh
-                    label="Submitted"
+                    label={t("fields.submitted")}
                     sortKey="submittedDate"
                     sort={sort}
                     onSort={toggleSort}
                   />
-                  <th>Actions</th>
+                  <th>{t("fields.actions")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -368,14 +370,14 @@ function ClaimList({ onChanged = () => {} }) {
                     <td colSpan={7}>
                       <div className="state">
                         <div className="state__emoji">🔍</div>
-                        <h3>No claims match “{search.trim()}”</h3>
-                        <p>Try a different search term.</p>
+                        <h3>{t("list.noSearchTitle", { term: search.trim() })}</h3>
+                        <p>{t("list.noSearchHelp")}</p>
                         <button
                           className="btn btn--sm btn--ghost"
                           onClick={() => setSearch("")}
                           style={{ marginTop: 12 }}
                         >
-                          Clear search
+                          {t("actions.clearSearch")}
                         </button>
                       </div>
                     </td>
@@ -387,7 +389,7 @@ function ClaimList({ onChanged = () => {} }) {
                       <button
                         className="link-id"
                         onClick={() => setDetailId(claim.id)}
-                        title="View claim details"
+                        title={t("list.viewDetails")}
                       >
                         #{claim.id}
                       </button>
@@ -403,35 +405,35 @@ function ClaimList({ onChanged = () => {} }) {
                           className="btn btn--sm btn--ghost"
                           onClick={() => setDetailId(claim.id)}
                         >
-                          View
+                          {t("actions.view")}
                         </button>
                         <button
                           className="btn btn--sm btn--approve"
                           disabled={busyId === claim.id || claim.status === "APPROVED"}
                           onClick={() => handleStatusUpdate(claim.id, "APPROVED")}
                         >
-                          Approve
+                          {t("actions.approve")}
                         </button>
                         <button
                           className="btn btn--sm btn--reject"
                           disabled={busyId === claim.id || claim.status === "REJECTED"}
                           onClick={() => handleStatusUpdate(claim.id, "REJECTED")}
                         >
-                          Reject
+                          {t("actions.reject")}
                         </button>
                         <button
                           className="btn btn--sm btn--edit"
                           disabled={busyId === claim.id}
                           onClick={() => setEditing(claim)}
                         >
-                          Edit
+                          {t("actions.edit")}
                         </button>
                         <button
                           className="btn btn--sm btn--delete"
                           disabled={busyId === claim.id}
                           onClick={() => handleDelete(claim.id)}
                         >
-                          Delete
+                          {t("actions.delete")}
                         </button>
                       </div>
                     </td>
@@ -444,21 +446,21 @@ function ClaimList({ onChanged = () => {} }) {
             {totalPages > 1 && (
               <div className="pagination">
                 <span className="pagination__info">
-                  Page {currentPage} of {totalPages}
+                  {t("list.pageInfo", { current: currentPage, total: totalPages })}
                 </span>
                 <button
                   className="btn btn--sm btn--ghost"
                   disabled={currentPage <= 1}
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                 >
-                  ← Prev
+                  {t("actions.prev")}
                 </button>
                 <button
                   className="btn btn--sm btn--ghost"
                   disabled={currentPage >= totalPages}
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 >
-                  Next →
+                  {t("actions.next")}
                 </button>
               </div>
             )}

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { fetchClaimSummary } from "../services/claimService";
 
 const money = (n) =>
@@ -9,6 +10,7 @@ const money = (n) =>
 // Server-computed summary (GET /api/claims/summary). Distinct from the client-side
 // tallies in ClaimList — this proves the aggregate endpoint end-to-end.
 function ClaimSummary() {
+  const { t } = useTranslation();
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -24,9 +26,7 @@ function ClaimSummary() {
       const data = await fetchClaimSummary();
       setSummary(data);
     } catch (err) {
-      setError(
-        "Could not load the summary. Make sure the backend is running at http://localhost:8080."
-      );
+      setError(t("summary.error"));
     } finally {
       setLoading(false);
     }
@@ -37,7 +37,7 @@ function ClaimSummary() {
       <div className="card">
         <div className="state">
           <div className="spinner" />
-          <p>Loading summary…</p>
+          <p>{t("summary.loading")}</p>
         </div>
       </div>
     );
@@ -58,35 +58,35 @@ function ClaimSummary() {
     <>
       <div className="list-header">
         <div>
-          <h2 className="card__title">Claims Summary</h2>
+          <h2 className="card__title">{t("summary.title")}</h2>
           <p className="card__subtitle" style={{ marginBottom: 0 }}>
-            Aggregate stats computed by the backend (/api/claims/summary)
+            {t("summary.subtitle")}
           </p>
         </div>
         <button className="btn btn--ghost" onClick={loadSummary}>
-          ↻ Refresh
+          {t("actions.refresh")}
         </button>
       </div>
 
       <div className="stats">
         <div className="stat stat--total">
-          <div className="stat__label">Total Claims</div>
+          <div className="stat__label">{t("list.stats.total")}</div>
           <div className="stat__value">{summary?.total ?? 0}</div>
         </div>
         <div className="stat stat--pending">
-          <div className="stat__label">Pending</div>
+          <div className="stat__label">{t("list.stats.pending")}</div>
           <div className="stat__value">{byStatus.PENDING ?? 0}</div>
         </div>
         <div className="stat stat--approved">
-          <div className="stat__label">Approved</div>
+          <div className="stat__label">{t("list.stats.approved")}</div>
           <div className="stat__value">{byStatus.APPROVED ?? 0}</div>
         </div>
         <div className="stat stat--rejected">
-          <div className="stat__label">Rejected</div>
+          <div className="stat__label">{t("list.stats.rejected")}</div>
           <div className="stat__value">{byStatus.REJECTED ?? 0}</div>
         </div>
         <div className="stat stat--total">
-          <div className="stat__label">Total Amount</div>
+          <div className="stat__label">{t("list.stats.totalAmount")}</div>
           <div className="stat__value">{money(summary?.totalClaimAmount)}</div>
         </div>
       </div>

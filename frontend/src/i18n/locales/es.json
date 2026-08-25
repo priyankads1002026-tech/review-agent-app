@@ -1,0 +1,188 @@
+{
+  "app": {
+    "title": "Sistema de Solicitud de Facturación de Reclamaciones",
+    "subtitle": "Gestione y revise las solicitudes de facturación de reclamaciones de seguros"
+  },
+  "theme": {
+    "toLight": "Cambiar al tema claro",
+    "toDark": "Cambiar al tema oscuro",
+    "light": "☀️ Claro",
+    "dark": "🌙 Oscuro"
+  },
+  "lang": {
+    "label": "Idioma"
+  },
+  "nav": {
+    "dashboard": "Panel",
+    "viewClaims": "Ver reclamaciones",
+    "submitNew": "Enviar nueva reclamación",
+    "guide": "Guía"
+  },
+  "actions": {
+    "refresh": "↻ Actualizar",
+    "search": "Buscar",
+    "view": "Ver",
+    "approve": "Aprobar",
+    "reject": "Rechazar",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "cancel": "Cancelar",
+    "close": "Cerrar",
+    "save": "Guardar cambios",
+    "clearFilters": "Borrar filtros",
+    "clearSearch": "Borrar búsqueda",
+    "prev": "← Anterior",
+    "next": "Siguiente →"
+  },
+  "status": {
+    "pending": "pendiente",
+    "approved": "aprobada",
+    "rejected": "rechazada",
+    "unknown": "desconocido",
+    "all": "Todos los estados"
+  },
+  "fields": {
+    "id": "ID",
+    "patientName": "Nombre del paciente",
+    "policyNumber": "Número de póliza",
+    "policyNo": "Nº de póliza",
+    "amount": "Importe",
+    "claimAmount": "Importe de la reclamación ($)",
+    "description": "Descripción",
+    "status": "Estado",
+    "submitted": "Enviada",
+    "actions": "Acciones"
+  },
+  "list": {
+    "title": "Todas las reclamaciones",
+    "subtitle": "Revise, apruebe, rechace o elimine reclamaciones",
+    "searchLabel": "Buscar",
+    "searchPlaceholder": "Nombre, póliza o descripción",
+    "statusLabel": "Estado",
+    "policyLabel": "Nº de póliza",
+    "policyPlaceholder": "p. ej. POL-1001",
+    "loading": "Cargando reclamaciones…",
+    "deleteConfirm": "¿Eliminar esta reclamación? Esto no se puede deshacer.",
+    "viewDetails": "Ver detalles de la reclamación",
+    "filterStatus": "estado \"{{value}}\"",
+    "filterPolicy": "póliza \"{{value}}\"",
+    "filterNote_one": "Mostrando {{count}} resultado para {{label}} — las estadísticas anteriores reflejan este filtro, no todas las reclamaciones.",
+    "filterNote_other": "Mostrando {{count}} resultados para {{label}} — las estadísticas anteriores reflejan este filtro, no todas las reclamaciones.",
+    "noMatchFilterTitle": "Ninguna reclamación coincide con {{label}}",
+    "noMatchFilterHelp": "Pruebe con otro filtro o bórrelo para ver todas las reclamaciones.",
+    "noClaimsTitle": "Aún no hay reclamaciones",
+    "noClaimsHelp": "Envíe una nueva reclamación para empezar.",
+    "noSearchTitle": "Ninguna reclamación coincide con “{{term}}”",
+    "noSearchHelp": "Pruebe con otro término de búsqueda.",
+    "pageInfo": "Página {{current}} de {{total}}",
+    "stats": {
+      "total": "Total de reclamaciones",
+      "pending": "Pendientes",
+      "approved": "Aprobadas",
+      "rejected": "Rechazadas",
+      "totalAmount": "Importe total"
+    },
+    "errors": {
+      "unreachable": "No se pudo conectar con la API del backend. Asegúrese de que está en ejecución en http://localhost:8080.",
+      "server": "La solicitud falló en el servidor. Inténtelo de nuevo.",
+      "update": "No se pudo actualizar el estado. ¿Está el backend en ejecución?",
+      "delete": "No se pudo eliminar la reclamación. ¿Está el backend en ejecución?"
+    }
+  },
+  "form": {
+    "title": "Enviar nueva reclamación",
+    "subtitle": "Los campos marcados con * son obligatorios",
+    "success": "¡Reclamación enviada correctamente!",
+    "submit": "Enviar reclamación",
+    "submitting": "Enviando…",
+    "patientPlaceholder": "p. ej. Jane Doe",
+    "policyPlaceholder": "p. ej. POL-100234",
+    "amountPlaceholder": "0.00",
+    "descPlaceholder": "Breve descripción de la reclamación (opcional)",
+    "errors": {
+      "required": "El nombre del paciente, el número de póliza y el importe son obligatorios.",
+      "amount": "El importe de la reclamación debe ser mayor que cero.",
+      "submit": "No se pudo enviar la reclamación. Asegúrese de que el backend está en ejecución en http://localhost:8080."
+    }
+  },
+  "detail": {
+    "title": "Detalles de la reclamación",
+    "titleWithId": "Reclamación n.º {{id}}",
+    "ariaLabel": "Detalles de la reclamación",
+    "loading": "Cargando reclamación…",
+    "error": "No se pudo cargar esta reclamación. Puede que haya sido eliminada.",
+    "claimId": "ID de la reclamación",
+    "noDescription": "No se proporcionó descripción"
+  },
+  "edit": {
+    "titleWithId": "Editar reclamación n.º {{id}}",
+    "subtitle": "Los campos marcados con * son obligatorios",
+    "saving": "Guardando…",
+    "save": "Guardar cambios",
+    "errors": {
+      "required": "El nombre del paciente, el número de póliza y el importe son obligatorios.",
+      "amount": "El importe de la reclamación debe ser mayor que cero.",
+      "save": "No se pudieron guardar los cambios. Asegúrese de que el backend está en ejecución."
+    }
+  },
+  "summary": {
+    "title": "Resumen de reclamaciones",
+    "subtitle": "Estadísticas agregadas calculadas por el backend (/api/claims/summary)",
+    "loading": "Cargando resumen…",
+    "error": "No se pudo cargar el resumen. Asegúrese de que el backend está en ejecución en http://localhost:8080."
+  },
+  "guide": {
+    "intro": {
+      "title": "¿Qué es esta aplicación?",
+      "subtitle": "Un recorrido rápido por el Sistema de Solicitud de Facturación de Reclamaciones",
+      "p1": "Esta es una demostración de facturación de reclamaciones de seguros como prueba de concepto: envíe reclamaciones, revíselas y observe cómo se actualiza un pequeño panel. Su verdadero propósito es dar al agente de revisión de PR con IA código realista para revisar — la aplicación existe para que haya algo significativo contra lo que abrir pull requests.",
+      "p2": "Los datos se guardan en memoria en el backend (http://localhost:8080), por lo que todo se restablece al reiniciar el servidor. Use las pestañas de arriba para moverse entre el Panel, la lista de reclamaciones y el formulario de envío."
+    },
+    "submit": {
+      "title": "Enviar una nueva reclamación",
+      "subtitle": "La pestaña \"Enviar nueva reclamación\"",
+      "items": [
+        "El Nombre del paciente, el Número de póliza y el Importe de la reclamación son obligatorios (marcados con *); la Descripción es opcional.",
+        "El importe debe ser mayor que cero.",
+        "Las nuevas reclamaciones comienzan como pendientes. Al enviarse correctamente, volverá a la lista de reclamaciones y la nueva fila aparecerá arriba."
+      ]
+    },
+    "view": {
+      "title": "Ver, filtrar, buscar, ordenar y paginar",
+      "subtitle": "La pestaña \"Ver reclamaciones\"",
+      "items": [
+        "La tabla muestra cada reclamación con ID, paciente, número de póliza, importe, estado aprobada / rechazada / pendiente y fecha de envío. Los indicadores de arriba muestran totales en vivo.",
+        "Filtre por Estado con el desplegable, o busque por Nº de póliza usando el campo y su botón Buscar. Estos consultan el backend; los indicadores reflejan el filtro activo, no todo el conjunto de datos. Use Borrar filtros para restablecer.",
+        "Buscar (el cuadro de texto libre) acota las filas cargadas por nombre del paciente, número de póliza o descripción — esto ocurre en el navegador.",
+        "Ordene haciendo clic en un encabezado de columna (ID, Paciente, Importe, Estado, Enviada); haga clic de nuevo para alternar entre ascendente y descendente.",
+        "Las listas largas se paginan — use Anterior / Siguiente cuando haya más de una página disponible.",
+        "Pulse ↻ Actualizar para recargar desde el backend."
+      ]
+    },
+    "rowActions": {
+      "title": "Aprobar, rechazar, editar, ver y eliminar",
+      "subtitle": "Acciones de fila en la tabla de reclamaciones",
+      "items": [
+        "Ver (o hacer clic en el #id) abre un panel de detalles con la reclamación completa, incluida su descripción.",
+        "Aprobar / Rechazar establecen el estado de la reclamación. El botón correspondiente se desactiva cuando la reclamación ya está en ese estado.",
+        "Editar abre una ventana modal para cambiar los campos de la reclamación y guardar.",
+        "Eliminar quita la reclamación tras un mensaje de confirmación — esto no se puede deshacer."
+      ]
+    },
+    "dashboard": {
+      "title": "Resumen del panel",
+      "subtitle": "La pestaña \"Panel\"",
+      "p1": "El Panel muestra totales agregados — total de reclamaciones, recuentos por estado y la suma de los importes. Estos números se calculan en el servidor (mediante /api/claims/summary), lo que es distinto de los recuentos del lado del cliente que se muestran en la lista de reclamaciones. Use ↻ Actualizar para recalcular tras hacer cambios."
+    },
+    "theme": {
+      "title": "Tema claro / oscuro",
+      "subtitle": "El interruptor en el encabezado",
+      "p1": "Use el botón 🌙 Oscuro / ☀️ Claro en la parte superior derecha para cambiar de tema. Su elección se guarda en el navegador (localStorage), por lo que se mantiene entre visitas. En la primera visita, la aplicación sigue la preferencia de su sistema operativo."
+    },
+    "language": {
+      "title": "Idioma",
+      "subtitle": "El selector en el encabezado",
+      "p1": "Use el selector de idioma en la parte superior derecha para cambiar entre inglés, español, árabe e hindi. El árabe cambia el diseño a derecha a izquierda. Su elección se guarda en el navegador (localStorage) y se restaura en su próxima visita."
+    }
+  }
+}
