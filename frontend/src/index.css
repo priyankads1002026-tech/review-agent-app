@@ -16,12 +16,12 @@
   --ink-700: #334155;
   --ink-500: #64748b;
   --ink-400: #94a3b8;
-  --line: #e2e8f0;
-  --surface: #ffffff;   /* cards, panels */
-  --surface-2: #f8fafc; /* table head, ghost hover */
-  --row-hover: #f8fbff; /* table row hover */
-  --input-bg: #ffffff;  /* form controls */
-  --canvas: #f1f5f9;    /* page background */
+  --line: rgba(99, 110, 160, 0.14);
+  --surface: #eef1fb;   /* cards, panels — soft matte so clay highlights read */
+  --surface-2: #e4e9f6; /* table head, ghost hover */
+  --row-hover: #e9edf9; /* table row hover */
+  --input-bg: #e6eaf6;  /* form controls (recessed) */
+  --canvas: #e4e9f6;    /* page background */
 
   /* Status colors */
   --ok: #15803d;
@@ -34,11 +34,32 @@
   --danger-bg: #fee2e2;
   --danger-bg-strong: #fecaca;
 
-  --radius: 12px;
-  --radius-sm: 8px;
-  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(15, 23, 42, 0.08);
-  --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08), 0 2px 4px rgba(15, 23, 42, 0.06);
-  --shadow-lg: 0 20px 40px rgba(15, 23, 42, 0.12);
+  /* Claymorphism: chunky rounded corners + puffy, inflated shadows. */
+  --radius: 26px;
+  --radius-sm: 16px;
+  /* Each surface shadow = soft outer drop + bright top-inset highlight +
+     subtle bottom-inset shade, which gives the inflated "clay" look. */
+  --shadow-sm:
+    0 8px 18px rgba(70, 80, 140, 0.16),
+    inset 0 6px 10px rgba(255, 255, 255, 0.7),
+    inset 0 -6px 10px rgba(90, 100, 160, 0.12);
+  --shadow-md:
+    0 16px 32px rgba(70, 80, 140, 0.2),
+    inset 0 8px 14px rgba(255, 255, 255, 0.75),
+    inset 0 -8px 14px rgba(90, 100, 160, 0.14);
+  --shadow-lg:
+    0 30px 60px rgba(70, 80, 140, 0.28),
+    inset 0 10px 20px rgba(255, 255, 255, 0.8),
+    inset 0 -10px 20px rgba(90, 100, 160, 0.16);
+  /* Recessed (pressed-in) look for form controls. */
+  --inset:
+    inset 3px 3px 7px rgba(90, 100, 160, 0.2),
+    inset -3px -3px 7px rgba(255, 255, 255, 0.7);
+  /* Puffy tactile buttons. */
+  --btn-shadow:
+    0 6px 14px rgba(70, 80, 140, 0.2),
+    inset 0 3px 5px rgba(255, 255, 255, 0.4),
+    inset 0 -3px 5px rgba(90, 100, 160, 0.16);
 }
 
 /* Dark theme — high-contrast: near-black canvas, near-white text/controls.
@@ -71,9 +92,27 @@
   --danger-bg: #2c1414;
   --danger-bg-strong: #4c1d1d;
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.5);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.6);
+  /* Clay shadows for dark: black outer drop, faint light top-inset, dark
+     bottom-inset — same inflated shape as light, tuned for a dark canvas. */
+  --shadow-sm:
+    0 8px 18px rgba(0, 0, 0, 0.5),
+    inset 0 6px 10px rgba(255, 255, 255, 0.06),
+    inset 0 -6px 10px rgba(0, 0, 0, 0.4);
+  --shadow-md:
+    0 16px 32px rgba(0, 0, 0, 0.55),
+    inset 0 8px 14px rgba(255, 255, 255, 0.07),
+    inset 0 -8px 14px rgba(0, 0, 0, 0.45);
+  --shadow-lg:
+    0 30px 60px rgba(0, 0, 0, 0.65),
+    inset 0 10px 20px rgba(255, 255, 255, 0.08),
+    inset 0 -10px 20px rgba(0, 0, 0, 0.5);
+  --inset:
+    inset 3px 3px 7px rgba(0, 0, 0, 0.55),
+    inset -3px -3px 7px rgba(255, 255, 255, 0.04);
+  --btn-shadow:
+    0 6px 14px rgba(0, 0, 0, 0.5),
+    inset 0 3px 5px rgba(255, 255, 255, 0.07),
+    inset 0 -3px 5px rgba(0, 0, 0, 0.45);
 }
 
 * { box-sizing: border-box; }
@@ -598,4 +637,84 @@ table.claims thead th.sortable { padding: 0; }
   .app-header__inner, .page { padding-left: 16px; padding-right: 16px; }
   .filter-bar { flex-direction: column; align-items: stretch; }
   .drawer { max-width: 100%; }
+}
+
+/* ============================================================
+   Claymorphism layer
+   Puffy, soft-3D "clay" styling built on the tokens above. The base
+   design system stays intact; this block layers on the tactile clay
+   treatment (borderless surfaces, inflated buttons, recessed inputs).
+   Remove this block to revert to the flat theme.
+   ============================================================ */
+
+/* Surfaces: drop the hairline borders — the clay shadow defines the edge. */
+.card,
+.stat,
+.modal,
+.drawer,
+.tabs {
+  border-color: transparent;
+}
+
+/* Chunky, glossy header logo. */
+.brand-mark {
+  border-radius: 18px;
+  box-shadow:
+    inset 0 3px 6px rgba(255, 255, 255, 0.4),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Buttons become inflated clay pills that press in on click. */
+.btn {
+  border-color: transparent;
+  border-radius: 999px;
+  box-shadow: var(--btn-shadow);
+}
+.btn:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow:
+    0 2px 6px rgba(70, 80, 140, 0.18),
+    inset 0 2px 6px rgba(90, 100, 160, 0.25);
+}
+/* Ghost/outline buttons sit on the canvas, so use the recessed treatment. */
+.btn--ghost { box-shadow: var(--inset); }
+
+/* Segmented tabs: recess the track, inflate the active pill. */
+.tabs { box-shadow: var(--inset); }
+.tab.is-active { box-shadow: var(--btn-shadow); }
+
+/* Status badges as little puffy pills. */
+.badge {
+  box-shadow:
+    0 3px 7px rgba(70, 80, 140, 0.16),
+    inset 0 2px 3px rgba(255, 255, 255, 0.35);
+}
+
+/* Form controls look pressed into the surface. */
+.field input,
+.field textarea,
+.filter-field select,
+.filter-field input {
+  border-color: transparent;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--inset);
+}
+.field input:focus,
+.field textarea:focus,
+.filter-field select:focus,
+.filter-field input:focus {
+  border-color: transparent;
+  box-shadow: var(--inset), 0 0 0 3px var(--brand-100);
+}
+
+/* Header control pills (language + theme) get the same soft glossy edge. */
+.lang-switcher__select,
+.theme-toggle {
+  box-shadow: inset 0 2px 5px rgba(255, 255, 255, 0.15);
+}
+
+/* Inline code chips in the guide, recessed to match inputs. */
+.guide code {
+  border-color: transparent;
+  box-shadow: var(--inset);
 }

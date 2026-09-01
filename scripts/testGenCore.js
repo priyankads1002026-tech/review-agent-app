@@ -51,6 +51,35 @@ function buildTargets(files, repoRoot) {
     });
 }
 
+// Whole-application mode: enumerate every eligible source file on disk (backend
+// + frontend/src), returning the same { filename, status } shape the diff-based
+// path produces so buildTargets() can consume it unchanged. `status: "modified"`
+// is a placeholder that keeps isEligible()'s "removed" guard from filtering them.
+function collectAllSourceFiles(repoRoot) {
+  const roots = ["backend", path.join("frontend", "src")];
+  const found = [];
+
+  function walk(dir) {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      if (entry.name === "node_modules") continue;
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        walk(full);
+      } else if (entry.isFile()) {
+        const rel = path.relative(repoRoot, full).split(path.sep).join("/");
+        if (isEligible(rel, "modified")) found.push(rel);
+      }
+    }
+  }
+
+  for (const rel of roots) {
+    const abs = path.join(repoRoot, rel);
+    if (fs.existsSync(abs)) walk(abs);
+  }
+
+  return found.map((filename) => ({ filename, status: "modified" }));
+}
+
 const BLOCK_RE = /### TEST FILE:\s*(.+?)\s*\r?\n```[a-zA-Z]*\r?\n([\s\S]*?)```/g;
 
 function parseTestBlocks(text) {
@@ -81,4 +110,4 @@ function writeGeneratedFiles(blocks, repoRoot) {
   return written;
 }
 
-module.exports = { buildTargets, parseTestBlocks, writeGeneratedFiles };
+module.exports = { collectAllSourceFiles, buildTargets, parseTestBlocks, writeGeneratedFiles };
