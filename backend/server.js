@@ -21,6 +21,10 @@ let nextId = 1;
 
 const today = () => new Date().toISOString().slice(0, 10); // YYYY-MM-DD
 
+// The only statuses a claim may hold. Used to validate PUT .../status so a
+// stray value can't land in the store and desync the summary buckets.
+const VALID_STATUSES = ["PENDING", "APPROVED", "REJECTED"];
+
 // Reasonable upper bounds so a claim can't store an unbounded blob in the
 // in-memory store (and to keep the UI/table sane).
 const MAX_NAME_LEN = 120;
@@ -146,6 +150,13 @@ app.put("/api/claims/:id/status", (req, res) => {
     return res
       .status(404)
       .json({ error: `Claim not found with id: ${req.params.id}` });
+  }
+  // Whitelist the status so an arbitrary value can't be persisted (which would
+  // render as an unknown badge and desync the /summary byStatus buckets).
+  if (!VALID_STATUSES.includes(req.query.status)) {
+    return res
+      .status(400)
+      .json({ error: `status must be one of: ${VALID_STATUSES.join(", ")}` });
   }
   claim.status = req.query.status;
   res.json(claim);

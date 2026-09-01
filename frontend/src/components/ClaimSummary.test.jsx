@@ -4,7 +4,7 @@
 // suspending. Assertions target the numeric values (which render regardless of
 // the active language), keeping the test locale-independent.
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import ClaimSummary from "./ClaimSummary";
 import { fetchClaimSummary } from "../services/claimService";
 import "../i18n";
@@ -46,5 +46,36 @@ describe("ClaimSummary", () => {
     await waitFor(() => {
       expect(container.querySelector(".alert--error")).not.toBeNull();
     });
+  });
+
+  // Edge: a summary with missing byStatus / totalClaimAmount must not crash and
+  // should fall back to zeros ($0.00 for the total amount tile).
+  it("renders zero fallbacks when byStatus / totalClaimAmount are absent", async () => {
+    fetchClaimSummary.mockResolvedValue({ total: 0 });
+
+    render(<ClaimSummary />);
+
+    // All four count tiles fall back to 0; the amount tile to $0.00.
+    expect(await screen.findByText("$0.00")).toBeInTheDocument();
+    // At least one "0" is rendered for the seeded status tiles.
+    expect(screen.getAllByText("0").length).toBeGreaterThan(0);
+  });
+
+  // Re-fetches when the Refresh button is clicked.
+  it("re-fetches the summary when Refresh is clicked", async () => {
+    fetchClaimSummary.mockResolvedValue({
+      total: 1,
+      byStatus: { PENDING: 1, APPROVED: 0, REJECTED: 0 },
+      totalClaimAmount: 10,
+    });
+
+    render(<ClaimSummary />);
+    await screen.findByText("$10.00");
+    expect(fetchClaimSummary).toHaveBeenCalledTimes(1);
+
+    const refreshBtn = screen.getByRole("button");
+    fireEvent.click(refreshBtn);
+
+    await waitFor(() => expect(fetchClaimSummary).toHaveBeenCalledTimes(2));
   });
 });

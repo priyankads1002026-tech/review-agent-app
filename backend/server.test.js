@@ -65,6 +65,25 @@ describe("POST /api/claims", () => {
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty("error");
   });
+
+  // Extra edge coverage: description over its 1000-char cap should be rejected.
+  it("rejects an over-long description with 400", async () => {
+    const res = await request(app)
+      .post("/api/claims")
+      .send({ ...newClaimPayload, description: "d".repeat(1001) });
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty("error");
+  });
+
+  // Extra edge coverage: omitting description entirely defaults to "" (not undefined).
+  // POST directly (not via createClaim, whose spread would re-add the fixture's description).
+  it("defaults a missing description to an empty string", async () => {
+    const { description, ...noDesc } = newClaimPayload;
+    const res = await request(app).post("/api/claims").send(noDesc);
+    expect(res.status).toBe(201);
+    expect(res.body.description).toBe("");
+    await request(app).delete(`/api/claims/${res.body.id}`);
+  });
 });
 
 describe("GET /api/claims/:id", () => {
@@ -88,6 +107,33 @@ describe("PUT /api/claims/:id/status", () => {
     const res = await request(app).put(`/api/claims/${claim.id}/status?status=APPROVED`);
     expect(res.status).toBe(200);
     expect(res.body.status).toBe("APPROVED");
+    await request(app).delete(`/api/claims/${claim.id}`);
+  });
+
+  // ---- Regression for Warning: [server.js — status whitelist] ----
+  // Finding: "PUT /api/claims/:id/status accepts any status string with no
+  // whitelist against PENDING/APPROVED/REJECTED", which lets `total` disagree
+  // with the sum of byStatus buckets. This test FAILS on the buggy behavior
+  // (an out-of-band status is accepted with 200) and PASSES once the handler
+  // rejects unknown statuses with 400.
+  it("rejects an out-of-band status value with 400 (keeps summary buckets consistent)", async () => {
+    const claim = await createClaim();
+    const res = await request(app).put(`/api/claims/${claim.id}/status?status=BOGUS`);
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty("error");
+    // The claim's status must remain unchanged (still the default PENDING).
+    const after = (await request(app).get(`/api/claims/${claim.id}`)).body;
+    expect(after.status).toBe("PENDING");
+    await request(app).delete(`/api/claims/${claim.id}`);
+  });
+
+  it("accepts each of the three whitelisted statuses", async () => {
+    const claim = await createClaim();
+    for (const s of ["PENDING", "APPROVED", "REJECTED"]) {
+      const res = await request(app).put(`/api/claims/${claim.id}/status?status=${s}`);
+      expect(res.status).toBe(200);
+      expect(res.body.status).toBe(s);
+    }
     await request(app).delete(`/api/claims/${claim.id}`);
   });
 });
@@ -123,6 +169,18 @@ describe("GET /api/claims/summary", () => {
     expect(after.byStatus.PENDING).toBe(before.byStatus.PENDING + 1);
     expect(after.totalClaimAmount).toBe(before.totalClaimAmount + 100);
 
+    await request(app).delete(`/api/claims/${claim.id}`);
+  });
+
+  // Covers Warning [server.js — status whitelist] at the aggregate level: with a
+  // proper whitelist, total should always equal the sum of the byStatus buckets.
+  it("keeps total consistent with the sum of byStatus buckets", async () => {
+    const claim = await createClaim();
+    await request(app).put(`/api/claims/${claim.id}/status?status=APPROVED`);
+    const summary = (await request(app).get("/api/claims/summary")).body;
+    const sum =
+      summary.byStatus.PENDING + summary.byStatus.APPROVED + summary.byStatus.REJECTED;
+    expect(sum).toBe(summary.total);
     await request(app).delete(`/api/claims/${claim.id}`);
   });
 });
@@ -178,6 +236,37 @@ describe("PUT /api/claims/:id", () => {
       .put("/api/claims/999999")
       .send({ patientName: "Nobody", policyNumber: "POL-0", claimAmount: 5 });
     expect(res.status).toBe(404);
+  });
+
+  // Extra edge coverage: PUT trims whitespace via the same validateClaimInput path.
+  it("trims patientName / policyNumber on update", async () => {
+    const claim = await createClaim();
+    const res = await request(app)
+      .put(`/api/claims/${claim.id}`)
+      .send({ patientName: "  Trim Me  ", policyNumber: "  POL-TT  ", claimAmount: 5 });
+    expect(res.status).toBe(200);
+    expect(res.body.patientName).toBe("Trim Me");
+    expect(res.body.policyNumber).toBe("POL-TT");
+    await request(app).delete(`/api/claims/${claim.id}`);
+  });
+});
+
+describe("GET /api/claims/status/:status", () => {
+  // Route-ordering companion: /status/:status must resolve before /:id.
+  it("returns only claims matching the requested status", async () => {
+    const pending = await createClaim();
+    const approved = await createClaim();
+    await request(app).put(`/api/claims/${approved.id}/status?status=APPROVED`);
+
+    const res = await request(app).get("/api/claims/status/APPROVED");
+    expect(res.status).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body.every((c) => c.status === "APPROVED")).toBe(true);
+    expect(res.body.some((c) => c.id === approved.id)).toBe(true);
+    expect(res.body.some((c) => c.id === pending.id)).toBe(false);
+
+    await request(app).delete(`/api/claims/${pending.id}`);
+    await request(app).delete(`/api/claims/${approved.id}`);
   });
 });
 
