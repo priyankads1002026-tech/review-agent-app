@@ -8,7 +8,7 @@
 import { describe, it, expect } from "vitest";
 import request from "supertest";
 import { app } from "./server.js";
-import { newClaimPayload } from "../test/fixtures/claims.mjs";
+import { newClaimPayload, nonNumericAmountClaim } from "../test/fixtures/claims.mjs";
 
 // Helper: POST a valid claim and return the created record (with server id).
 async function createClaim(overrides = {}) {
@@ -44,6 +44,27 @@ describe("POST /api/claims", () => {
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty("error");
   });
+
+  it("rejects a non-numeric claimAmount with 400 (would otherwise poison the summary total)", async () => {
+    const res = await request(app).post("/api/claims").send(nonNumericAmountClaim);
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty("error");
+  });
+
+  it("trims surrounding whitespace on patientName / policyNumber before storing", async () => {
+    const claim = await createClaim({ patientName: "  Spaced Name  ", policyNumber: "  POL-TRIM  " });
+    expect(claim.patientName).toBe("Spaced Name");
+    expect(claim.policyNumber).toBe("POL-TRIM");
+    await request(app).delete(`/api/claims/${claim.id}`); // cleanup
+  });
+
+  it("rejects an over-long patientName with 400", async () => {
+    const res = await request(app)
+      .post("/api/claims")
+      .send({ ...newClaimPayload, patientName: "x".repeat(121) });
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty("error");
+  });
 });
 
 describe("GET /api/claims/:id", () => {
@@ -72,6 +93,27 @@ describe("PUT /api/claims/:id/status", () => {
 });
 
 describe("GET /api/claims/summary", () => {
+  // Regression guard for route ordering: /summary must resolve to the aggregate
+  // endpoint, NOT be captured as GET /api/claims/:id (which would 404 on "summary").
+  it("returns the aggregate shape and is never treated as an id lookup", async () => {
+    const res = await request(app).get("/api/claims/summary");
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty("total");
+    expect(typeof res.body.total).toBe("number");
+    expect(typeof res.body.totalClaimAmount).toBe("number");
+    expect(Number.isFinite(res.body.totalClaimAmount)).toBe(true); // NaN-safe
+    // byStatus is seeded with all three known statuses regardless of data.
+    expect(res.body.byStatus).toEqual(
+      expect.objectContaining({
+        PENDING: expect.any(Number),
+        APPROVED: expect.any(Number),
+        REJECTED: expect.any(Number),
+      })
+    );
+    // A single-claim lookup would return a claim object (with patientName), not a summary.
+    expect(res.body).not.toHaveProperty("patientName");
+  });
+
   it("reflects a newly created claim in the totals (delta check)", async () => {
     const before = (await request(app).get("/api/claims/summary")).body;
     const claim = await createClaim({ claimAmount: 100 });
@@ -82,6 +124,60 @@ describe("GET /api/claims/summary", () => {
     expect(after.totalClaimAmount).toBe(before.totalClaimAmount + 100);
 
     await request(app).delete(`/api/claims/${claim.id}`);
+  });
+});
+
+describe("PUT /api/claims/:id", () => {
+  it("updates editable fields while preserving id, status, and submittedDate", async () => {
+    const claim = await createClaim();
+    // Move it off the default status first, so we can prove PUT doesn't reset it.
+    await request(app).put(`/api/claims/${claim.id}/status?status=APPROVED`);
+
+    const res = await request(app)
+      .put(`/api/claims/${claim.id}`)
+      .send({
+        patientName: "Updated Name",
+        policyNumber: "POL-UPDATED",
+        claimAmount: 999,
+        description: "Revised description",
+      });
+
+    expect(res.status).toBe(200);
+    expect(res.body.id).toBe(claim.id); // preserved
+    expect(res.body.status).toBe("APPROVED"); // preserved (not reset to PENDING)
+    expect(res.body.submittedDate).toBe(claim.submittedDate); // preserved
+    expect(res.body.patientName).toBe("Updated Name"); // updated
+    expect(res.body.claimAmount).toBe(999); // updated
+
+    await request(app).delete(`/api/claims/${claim.id}`);
+  });
+
+  it("rejects an empty patientName with 400 and leaves the claim unchanged", async () => {
+    const claim = await createClaim();
+    const res = await request(app)
+      .put(`/api/claims/${claim.id}`)
+      .send({ patientName: "", policyNumber: "POL-X", claimAmount: 10 });
+    expect(res.status).toBe(400);
+
+    const after = (await request(app).get(`/api/claims/${claim.id}`)).body;
+    expect(after.patientName).toBe(newClaimPayload.patientName); // untouched
+    await request(app).delete(`/api/claims/${claim.id}`);
+  });
+
+  it("rejects a negative claimAmount with 400", async () => {
+    const claim = await createClaim();
+    const res = await request(app)
+      .put(`/api/claims/${claim.id}`)
+      .send({ patientName: "Ok", policyNumber: "POL-X", claimAmount: -1 });
+    expect(res.status).toBe(400);
+    await request(app).delete(`/api/claims/${claim.id}`);
+  });
+
+  it("returns 404 when updating an unknown id", async () => {
+    const res = await request(app)
+      .put("/api/claims/999999")
+      .send({ patientName: "Nobody", policyNumber: "POL-0", claimAmount: 5 });
+    expect(res.status).toBe(404);
   });
 });
 

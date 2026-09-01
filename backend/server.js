@@ -16,9 +16,15 @@ let nextId = 1;
 
 const today = () => new Date().toISOString().slice(0, 10); // YYYY-MM-DD
 
+// Reasonable upper bounds so a claim can't store an unbounded blob in the
+// in-memory store (and to keep the UI/table sane).
+const MAX_NAME_LEN = 120;
+const MAX_POLICY_LEN = 60;
+const MAX_DESCRIPTION_LEN = 1000;
+
 // Validate + normalize the editable fields shared by POST and PUT. Returns
-// { error } on failure, or { value } with a Number-coerced claimAmount and a
-// string description on success. id/status/submittedDate are the caller's job.
+// { error } on failure, or { value } with trimmed strings and a Number-coerced
+// claimAmount on success. id/status/submittedDate are the caller's job.
 function validateClaimInput(body) {
   const { patientName, policyNumber, claimAmount, description } = body || {};
   const amount = Number(claimAmount);
@@ -32,12 +38,26 @@ function validateClaimInput(body) {
         "patientName and policyNumber must be non-empty strings and claimAmount must be a positive number",
     };
   }
+  // Trim before storing so leading/trailing whitespace can't create near-duplicate
+  // names/policies or bypass the non-empty check above.
+  const name = patientName.trim();
+  const policy = policyNumber.trim();
+  const desc = typeof description === "string" ? description.trim() : "";
+  if (
+    name.length > MAX_NAME_LEN ||
+    policy.length > MAX_POLICY_LEN ||
+    desc.length > MAX_DESCRIPTION_LEN
+  ) {
+    return {
+      error: `patientName (max ${MAX_NAME_LEN}), policyNumber (max ${MAX_POLICY_LEN}) and description (max ${MAX_DESCRIPTION_LEN}) must be within their length limits`,
+    };
+  }
   return {
     value: {
-      patientName,
-      policyNumber,
+      patientName: name,
+      policyNumber: policy,
       claimAmount: amount,
-      description: typeof description === "string" ? description : "",
+      description: desc,
     },
   };
 }
@@ -50,6 +70,11 @@ function validateClaimInput(body) {
 app.get("/api/claims", (req, res) => {
   res.json(claims);
 });
+
+// ROUTE ORDERING (do not reorder): the literal paths /summary and /status/:status
+// MUST be registered before the parameterized /:id route, otherwise Express would
+// match "summary"/"status" as an :id. server.test.js has a regression test that
+// asserts /summary returns the aggregate shape and is never treated as an id lookup.
 
 // GET /api/claims/summary  -> aggregate stats across all claims
 app.get("/api/claims/summary", (req, res) => {

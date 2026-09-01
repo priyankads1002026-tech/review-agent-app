@@ -12,6 +12,11 @@ jobs:
       pull-requests: write
       issues: write
 
+    # Surface the secret at job level so the Claude-powered steps below can guard
+    # on its presence (an `if:` can't read a step's own env, but it can read job env).
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -24,18 +29,27 @@ jobs:
       - name: Install dependencies
         run: cd scripts && npm install
 
+      # If the secret isn't configured (e.g. a fork, or a repo without the key),
+      # skip the Claude-powered steps instead of hard-failing an unrelated PR.
+      - name: Warn when ANTHROPIC_API_KEY is missing
+        if: ${{ env.ANTHROPIC_API_KEY == '' }}
+        run: echo "::warning::ANTHROPIC_API_KEY secret is not set — skipping automated review and test generation."
+
       - name: Run review script
+        if: ${{ env.ANTHROPIC_API_KEY != '' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           REPO: ${{ github.repository }}
         run: node scripts/review.js
 
+      # continue-on-error: test generation is a nice-to-have that runs after the
+      # review is already posted — a failure here must never fail the PR / block a merge.
       - name: Generate suggested tests
+        if: ${{ env.ANTHROPIC_API_KEY != '' }}
+        continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           REPO: ${{ github.repository }}
         run: node scripts/generateTests.js
