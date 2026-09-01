@@ -110,11 +110,11 @@ This machine has no `git`/`gh` CLI. Easiest options:
 
 After it's on GitHub: create a branch, change a file, open a PR — the review agent runs on the PR automatically.
 
-### Run Backend (http://localhost:8080)
+### Run Backend (http://localhost:8008)
 ```
 cd backend
 npm install
-npm start
+npm start          # override the port with $env:PORT if 8008 is busy
 ```
 
 ### Run Frontend (http://localhost:3000)
@@ -123,6 +123,11 @@ cd frontend
 npm install
 npm start
 ```
+
+> The frontend calls the backend at `http://localhost:8008/api/claims` by default.
+> To point it elsewhere, copy `frontend/.env.example` to `frontend/.env` and set
+> `VITE_API_BASE_URL`. The backend's CORS is locked to the frontend's origin
+> (`http://localhost:3000`), configurable via the `CORS_ORIGIN` env var.
 
 > Requires Node.js (tested on v22). No Java, Maven, or Python needed.
 > The backend uses an in-memory store, so data resets on every restart.
