@@ -1,4 +1,8 @@
-const BASE_URL = "http://localhost:8008/api/claims";
+// Single source of truth for the API base URL. Override at build/dev time with
+// VITE_API_BASE_URL (see .env.example); defaults to the local backend on :8008.
+// Keep this port in sync with the backend's PORT (backend/server.js).
+const BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:8008/api/claims";
 
 export const fetchClaims = async () => {
   const response = await fetch(BASE_URL);

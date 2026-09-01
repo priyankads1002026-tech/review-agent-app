@@ -4,7 +4,12 @@ import cors from "cors";
 const app = express();
 const PORT = process.env.PORT || 8008;
 
-app.use(cors({ origin: "http://localhost:3000" }));
+// CORS_ORIGIN is the FRONTEND's origin (who may call this API) — the Vite dev
+// server on :3000 — NOT this backend's port. Don't change it to match PORT.
+// Override via env if the frontend is served from somewhere else.
+const CORS_ORIGIN = process.env.CORS_ORIGIN || "http://localhost:3000";
+
+app.use(cors({ origin: CORS_ORIGIN }));
 app.use(express.json());
 
 // ---------------------------------------------------------------------------

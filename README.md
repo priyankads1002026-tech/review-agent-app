@@ -125,8 +125,8 @@ npm start
 ```
 
 > The frontend calls the backend at `http://localhost:8008/api/claims` by default.
-> To point it elsewhere, copy `frontend/.env.example` to `frontend/.env` and set
-> `VITE_API_BASE_URL`. The backend's CORS is locked to the frontend's origin
+> To point it elsewhere, set `VITE_API_BASE_URL` in a `frontend/.env` file (a Vite
+> env var). The backend's CORS is locked to the frontend's origin
 > (`http://localhost:3000`), configurable via the `CORS_ORIGIN` env var.
 
 > Requires Node.js (tested on v22). No Java, Maven, or Python needed.
