@@ -8,4 +8,9 @@ export default defineConfig({
     port: 3000,
     open: true,
   },
+  test: {
+    environment: "jsdom",
+    setupFiles: ["./src/test/setup.js"],
+    globals: true,
+  },
 });

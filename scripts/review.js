@@ -1,64 +1,23 @@
 const { Octokit } = require("@octokit/rest");
 const { buildPrompt } = require("./reviewPrompt");
-const { MODEL, runReview } = require("./claude");
+const { MODEL, runPrompt } = require("./claude");
+const { MARKER, fetchPrContext, findStickyComment } = require("./prContext");
 
 const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
 
 const [owner, repo] = process.env.REPO.split("/");
 const prNumber = parseInt(process.env.PR_NUMBER, 10);
 
-// Hidden marker so we can find & update our own comment instead of posting a new
-// one on every push (keeps a single, always-current review comment per PR).
-const MARKER = "<!-- claude-pr-review-agent -->";
-
-// Keep the prompt within a sane token budget: cap each file's patch and the total.
-const MAX_PATCH_CHARS = 12000;
-const MAX_TOTAL_DIFF_CHARS = 90000;
-
 async function main() {
-  // Step 1: PR metadata + changed files
-  const { data: pr } = await octokit.pulls.get({
-    owner,
-    repo,
-    pull_number: prNumber,
-  });
-
-  const { data: files } = await octokit.pulls.listFiles({
-    owner,
-    repo,
-    pull_number: prNumber,
-    per_page: 100,
-  });
+  // Step 1: PR metadata, changed files, file inventory, and capped diff text
+  const { pr, files, fileTable, diffSummary } = await fetchPrContext(octokit, owner, repo, prNumber);
 
   if (files.length === 0) {
     console.log("No files changed in this PR. Skipping review.");
     return;
   }
 
-  // Step 2: A quick file inventory (always shown, even if a patch is truncated)
-  const fileTable = files
-    .map((f) => `- \`${f.filename}\` — ${f.status} (+${f.additions} / -${f.deletions})`)
-    .join("\n");
-
-  // Step 3: A readable diff for the model, with per-file and total size caps
-  let total = 0;
-  const diffParts = [];
-  for (const f of files) {
-    let patch = f.patch || "(no textual diff available — binary, renamed, or too large)";
-    if (patch.length > MAX_PATCH_CHARS) {
-      patch = patch.slice(0, MAX_PATCH_CHARS) + "\n... (patch truncated) ...";
-    }
-    const block = `File: ${f.filename}\nStatus: ${f.status} (+${f.additions} / -${f.deletions})\n\n${patch}`;
-    if (total + block.length > MAX_TOTAL_DIFF_CHARS) {
-      diffParts.push("... (remaining files omitted from diff due to size limits) ...");
-      break;
-    }
-    diffParts.push(block);
-    total += block.length;
-  }
-  const diffSummary = diffParts.join("\n\n---\n\n");
-
-  // Step 4: Ask Claude for a summary, a review, a verdict, and a fix prompt
+  // Step 2: Ask Claude for a summary, a review, a verdict, and a fix prompt
   const prompt = buildPrompt({
     prNumber,
     title: pr.title,
@@ -68,7 +27,7 @@ async function main() {
     diffSummary,
   });
 
-  const { text: reviewContent } = await runReview(prompt, process.env.ANTHROPIC_API_KEY);
+  const { text: reviewContent } = await runPrompt(prompt, process.env.ANTHROPIC_API_KEY);
 
   if (!reviewContent) {
     throw new Error("Claude returned no text content for the review.");
@@ -82,14 +41,8 @@ async function main() {
 
 ${reviewContent}`;
 
-  // Step 5: Create or update a single sticky comment on the PR
-  const { data: comments } = await octokit.issues.listComments({
-    owner,
-    repo,
-    issue_number: prNumber,
-    per_page: 100,
-  });
-  const existing = comments.find((c) => c.body && c.body.includes(MARKER));
+  // Step 3: Create or update a single sticky comment on the PR
+  const existing = await findStickyComment(octokit, owner, repo, prNumber);
 
   if (existing) {
     await octokit.issues.updateComment({

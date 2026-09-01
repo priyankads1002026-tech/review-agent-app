@@ -6,20 +6,21 @@ const Anthropic = require("@anthropic-ai/sdk");
 
 const MODEL = "claude-opus-4-8";
 
-// Runs the review prompt through Claude and returns { text, usage }.
-async function runReview(prompt, apiKey) {
+// Runs a prompt through Claude and returns { text, usage }. Provider-agnostic
+// callers (review.js, generateTests.js, and their .local.js runners) share this.
+async function runPrompt(prompt, apiKey) {
   const client = new Anthropic({ apiKey });
 
   const response = await client.messages.create({
     model: MODEL,
     max_tokens: 16000,
-    thinking: { type: "adaptive" },
-    output_config: { effort: "high" },
     messages: [{ role: "user", content: prompt }],
   });
 
   // content is a list of blocks (thinking, text, ...) — keep only the text.
-  const text = response.content
+  // Guard against an unexpected response shape before filtering.
+  const blocks = Array.isArray(response.content) ? response.content : [];
+  const text = blocks
     .filter((block) => block.type === "text")
     .map((block) => block.text)
     .join("")
@@ -34,4 +35,4 @@ async function runReview(prompt, apiKey) {
   return { text, usage };
 }
 
-module.exports = { MODEL, runReview };
+module.exports = { MODEL, runPrompt };

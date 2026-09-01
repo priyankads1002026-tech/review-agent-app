@@ -1,0 +1,43 @@
+name: Generate All Tests (manual)
+
+# Whole-application test generation — run on demand from the Actions tab, not on
+# every PR. Generates/extends Vitest tests for EVERY eligible backend/frontend
+# source file, then uploads them as a downloadable artifact. It intentionally does
+# NOT commit/push (contents: read) — the developer downloads the artifact and
+# copies in what they want, mirroring the diff-scoped agent's "never push" rule.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  generate-all:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: cd scripts && npm install
+
+      - name: Generate whole-application tests
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: node scripts/generateTestsAll.js
+
+      - name: Upload generated tests
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-tests
+          if-no-files-found: warn
+          path: |
+            backend/**/*.test.js
+            frontend/src/**/*.test.jsx
+            frontend/src/**/*.test.js

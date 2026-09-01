@@ -2,7 +2,8 @@
    Claim Billing Request System — Design System
    ============================================================ */
 
-:root {
+:root,
+:root[data-theme="light"] {
   /* Brand palette */
   --brand-900: #0b3a6f;
   --brand-700: #12539c;
@@ -15,23 +16,103 @@
   --ink-700: #334155;
   --ink-500: #64748b;
   --ink-400: #94a3b8;
-  --line: #e2e8f0;
-  --surface: #ffffff;
-  --canvas: #f1f5f9;
+  --line: rgba(99, 110, 160, 0.14);
+  --surface: #eef1fb;   /* cards, panels — soft matte so clay highlights read */
+  --surface-2: #e4e9f6; /* table head, ghost hover */
+  --row-hover: #e9edf9; /* table row hover */
+  --input-bg: #e6eaf6;  /* form controls (recessed) */
+  --canvas: #e4e9f6;    /* page background */
 
   /* Status colors */
   --ok: #15803d;
   --ok-bg: #dcfce7;
+  --ok-bg-strong: #bbf7d0;
   --warn: #b45309;
   --warn-bg: #fef3c7;
+  --warn-bg-strong: #fde68a;
   --danger: #b91c1c;
   --danger-bg: #fee2e2;
+  --danger-bg-strong: #fecaca;
 
-  --radius: 12px;
-  --radius-sm: 8px;
-  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(15, 23, 42, 0.08);
-  --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08), 0 2px 4px rgba(15, 23, 42, 0.06);
-  --shadow-lg: 0 20px 40px rgba(15, 23, 42, 0.12);
+  /* Claymorphism: chunky rounded corners + puffy, inflated shadows. */
+  --radius: 26px;
+  --radius-sm: 16px;
+  /* Each surface shadow = soft outer drop + bright top-inset highlight +
+     subtle bottom-inset shade, which gives the inflated "clay" look. */
+  --shadow-sm:
+    0 8px 18px rgba(70, 80, 140, 0.16),
+    inset 0 6px 10px rgba(255, 255, 255, 0.7),
+    inset 0 -6px 10px rgba(90, 100, 160, 0.12);
+  --shadow-md:
+    0 16px 32px rgba(70, 80, 140, 0.2),
+    inset 0 8px 14px rgba(255, 255, 255, 0.75),
+    inset 0 -8px 14px rgba(90, 100, 160, 0.14);
+  --shadow-lg:
+    0 30px 60px rgba(70, 80, 140, 0.28),
+    inset 0 10px 20px rgba(255, 255, 255, 0.8),
+    inset 0 -10px 20px rgba(90, 100, 160, 0.16);
+  /* Recessed (pressed-in) look for form controls. */
+  --inset:
+    inset 3px 3px 7px rgba(90, 100, 160, 0.2),
+    inset -3px -3px 7px rgba(255, 255, 255, 0.7);
+  /* Puffy tactile buttons. */
+  --btn-shadow:
+    0 6px 14px rgba(70, 80, 140, 0.2),
+    inset 0 3px 5px rgba(255, 255, 255, 0.4),
+    inset 0 -3px 5px rgba(90, 100, 160, 0.16);
+}
+
+/* Dark theme — high-contrast: near-black canvas, near-white text/controls.
+   Brand blue is lightened so it stays legible on dark surfaces. */
+:root[data-theme="dark"] {
+  --brand-900: #0a1a2f;
+  --brand-700: #2563eb;
+  --brand-600: #3b82f6;
+  --brand-500: #60a5fa;
+  --brand-100: #17324f;
+
+  --ink-900: #f1f5f9;
+  --ink-700: #cbd5e1;
+  --ink-500: #94a3b8;
+  --ink-400: #64748b;
+  --line: #2a3648;
+  --surface: #161c26;
+  --surface-2: #1e2734;
+  --row-hover: #1c2635;
+  --input-bg: #0f141c;
+  --canvas: #0b0f17;
+
+  --ok: #4ade80;
+  --ok-bg: #0f2a1a;
+  --ok-bg-strong: #14532d;
+  --warn: #fbbf24;
+  --warn-bg: #2a1f08;
+  --warn-bg-strong: #4d3610;
+  --danger: #f87171;
+  --danger-bg: #2c1414;
+  --danger-bg-strong: #4c1d1d;
+
+  /* Clay shadows for dark: black outer drop, faint light top-inset, dark
+     bottom-inset — same inflated shape as light, tuned for a dark canvas. */
+  --shadow-sm:
+    0 8px 18px rgba(0, 0, 0, 0.5),
+    inset 0 6px 10px rgba(255, 255, 255, 0.06),
+    inset 0 -6px 10px rgba(0, 0, 0, 0.4);
+  --shadow-md:
+    0 16px 32px rgba(0, 0, 0, 0.55),
+    inset 0 8px 14px rgba(255, 255, 255, 0.07),
+    inset 0 -8px 14px rgba(0, 0, 0, 0.45);
+  --shadow-lg:
+    0 30px 60px rgba(0, 0, 0, 0.65),
+    inset 0 10px 20px rgba(255, 255, 255, 0.08),
+    inset 0 -10px 20px rgba(0, 0, 0, 0.5);
+  --inset:
+    inset 3px 3px 7px rgba(0, 0, 0, 0.55),
+    inset -3px -3px 7px rgba(255, 255, 255, 0.04);
+  --btn-shadow:
+    0 6px 14px rgba(0, 0, 0, 0.5),
+    inset 0 3px 5px rgba(255, 255, 255, 0.07),
+    inset 0 -3px 5px rgba(0, 0, 0, 0.45);
 }
 
 * { box-sizing: border-box; }
@@ -46,6 +127,7 @@ body {
   background: var(--canvas);
   -webkit-font-smoothing: antialiased;
   line-height: 1.5;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 /* ---------------- App shell ---------------- */
@@ -155,14 +237,49 @@ table.claims thead th {
   color: var(--ink-500);
   padding: 12px 14px;
   border-bottom: 1px solid var(--line);
-  background: #f8fafc;
+  background: var(--surface-2);
   white-space: nowrap;
 }
 table.claims tbody td { padding: 13px 14px; border-bottom: 1px solid var(--line); vertical-align: middle; }
 table.claims tbody tr:last-child td { border-bottom: 0; }
-table.claims tbody tr:hover { background: #f8fbff; }
+table.claims tbody tr:hover { background: var(--row-hover); }
 .cell-amount { font-variant-numeric: tabular-nums; font-weight: 600; }
 .cell-muted { color: var(--ink-500); }
+
+/* Sortable column headers — the th keeps its uppercase style; the inner button
+   carries the click target and hover/active affordance. */
+table.claims thead th.sortable { padding: 0; }
+.sortable__btn {
+  width: 100%;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: inherit;
+  cursor: pointer;
+  padding: 12px 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.sortable__btn:hover { color: var(--brand-700); }
+.sortable--active .sortable__btn { color: var(--brand-700); }
+.sortable__ind { font-size: 10px; line-height: 1; }
+
+/* ---------------- Pagination ---------------- */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+.pagination__info { font-size: 13px; color: var(--ink-500); margin-right: auto; }
 
 /* ---------------- Status badges ---------------- */
 .badge {
@@ -199,17 +316,59 @@ table.claims tbody tr:hover { background: #f8fbff; }
 .btn--primary:hover:not(:disabled) { background: var(--brand-700); }
 .btn--lg { padding: 11px 22px; font-size: 15px; }
 .btn--ghost { background: var(--surface); border-color: var(--line); color: var(--ink-700); }
-.btn--ghost:hover:not(:disabled) { background: #f8fafc; border-color: var(--ink-400); }
+.btn--ghost:hover:not(:disabled) { background: var(--surface-2); border-color: var(--ink-400); }
 
 /* Small action buttons in table */
 .actions { display: flex; gap: 6px; flex-wrap: wrap; }
 .btn--sm { padding: 6px 11px; font-size: 12px; }
 .btn--approve { background: var(--ok-bg); color: var(--ok); }
-.btn--approve:hover:not(:disabled) { background: #bbf7d0; }
+.btn--approve:hover:not(:disabled) { background: var(--ok-bg-strong); }
 .btn--reject { background: var(--warn-bg); color: var(--warn); }
-.btn--reject:hover:not(:disabled) { background: #fde68a; }
+.btn--reject:hover:not(:disabled) { background: var(--warn-bg-strong); }
 .btn--delete { background: var(--danger-bg); color: var(--danger); }
-.btn--delete:hover:not(:disabled) { background: #fecaca; }
+.btn--delete:hover:not(:disabled) { background: var(--danger-bg-strong); }
+.btn--edit { background: var(--brand-100); color: var(--brand-700); }
+.btn--edit:hover:not(:disabled) { background: var(--brand-500); color: #fff; }
+
+/* ---------------- Modal ---------------- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  z-index: 1000;
+}
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 560px;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  padding: 22px 24px;
+}
+.modal__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+.modal__close {
+  line-height: 1;
+  flex-shrink: 0;
+}
+.modal__body { margin-top: 4px; }
+.modal__footer {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
 
 /* ---------------- Form ---------------- */
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 18px; }
@@ -223,7 +382,7 @@ table.claims tbody tr:hover { background: #f8fbff; }
   padding: 10px 12px;
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
-  background: #fff;
+  background: var(--input-bg);
   color: var(--ink-900);
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
@@ -275,8 +434,287 @@ table.claims tbody tr:hover { background: #f8fbff; }
   flex-wrap: wrap;
 }
 
+.filter-bar {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--brand-100, #e5e7eb);
+}
+.filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.filter-field__label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-700, #374151);
+}
+.filter-field__row {
+  display: flex;
+  gap: 8px;
+}
+.filter-field select,
+.filter-field input {
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 14px;
+  font: inherit;
+  background: var(--input-bg);
+  color: var(--ink-900);
+}
+.filter-note {
+  font-size: 12.5px;
+  color: var(--ink-500);
+  margin: -6px 0 14px;
+}
+
+/* ---------------- Theme toggle ---------------- */
+/* Header right-hand cluster: language switcher + theme toggle. margin-inline-start
+   pushes it to the trailing edge in both LTR and RTL (Arabic). */
+.header-controls {
+  margin-inline-start: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Language dropdown, styled to sit on the colored header next to the toggle. */
+.lang-switcher { display: inline-flex; align-items: center; }
+.lang-switcher__select {
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.lang-switcher__select:hover {
+  background: rgba(255, 255, 255, 0.24);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+/* The dropdown list itself renders on a light surface, so give options readable
+   colors rather than inheriting the white-on-transparent header styling. */
+.lang-switcher__select option { color: #111; background: #fff; }
+
+/* Visually hidden but available to screen readers (switcher <label> text). */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.theme-toggle {
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.theme-toggle:hover { background: rgba(255, 255, 255, 0.24); border-color: rgba(255, 255, 255, 0.6); }
+
+/* ---------------- Detail drawer ---------------- */
+/* Clickable claim id in the table — looks like a link, keyboard-focusable. */
+.link-id {
+  border: 0;
+  background: none;
+  font: inherit;
+  color: var(--brand-600);
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+.link-id:hover { text-decoration: underline; color: var(--brand-700); }
+
+/* Full-screen scrim; drawer slides in from the right. z-index sits above the
+   header/modal stack (no shared z-index token exists, so pick an explicit value). */
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  display: flex;
+  justify-content: flex-end;
+  z-index: 1100;
+}
+.drawer {
+  width: 100%;
+  max-width: 440px;
+  height: 100%;
+  background: var(--surface);
+  border-left: 1px solid var(--line);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  animation: drawer-in 0.22s ease;
+}
+@keyframes drawer-in {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+.drawer__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 22px;
+  border-bottom: 1px solid var(--line);
+}
+.drawer__close { line-height: 1; padding: 6px 10px; flex-shrink: 0; }
+.drawer__body { padding: 20px 22px; }
+
+.detail-list { margin: 0; }
+.detail-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+.detail-row:last-child { border-bottom: 0; }
+.detail-row__label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-500);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+.detail-row__value {
+  margin: 0;
+  font-size: 14px;
+  color: var(--ink-900);
+  text-align: right;
+  word-break: break-word;
+}
+/* Description reads better stacked full-width and left-aligned. */
+.detail-row--stacked { flex-direction: column; align-items: stretch; }
+.detail-row--stacked .detail-row__value { text-align: left; }
+
+/* ---------------- Guide ---------------- */
+/* Static help tab. Reuses .card; these rules only tidy body copy spacing and
+   inline <code>, using existing CSS variables so both themes work. */
+.guide p { color: var(--ink-700); margin: 0 0 10px; }
+.guide p:last-child { margin-bottom: 0; }
+.guide ul { color: var(--ink-700); margin: 0; padding-left: 20px; }
+.guide li { margin-bottom: 8px; }
+.guide li:last-child { margin-bottom: 0; }
+.guide code {
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 1px 6px;
+  font-size: 0.9em;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+}
+
 /* ---------------- Responsive ---------------- */
 @media (max-width: 640px) {
   .form-grid { grid-template-columns: 1fr; }
   .app-header__inner, .page { padding-left: 16px; padding-right: 16px; }
+  .filter-bar { flex-direction: column; align-items: stretch; }
+  .drawer { max-width: 100%; }
+}
+
+/* ============================================================
+   Claymorphism layer
+   Puffy, soft-3D "clay" styling built on the tokens above. The base
+   design system stays intact; this block layers on the tactile clay
+   treatment (borderless surfaces, inflated buttons, recessed inputs).
+   Remove this block to revert to the flat theme.
+   ============================================================ */
+
+/* Surfaces: drop the hairline borders — the clay shadow defines the edge. */
+.card,
+.stat,
+.modal,
+.drawer,
+.tabs {
+  border-color: transparent;
+}
+
+/* Chunky, glossy header logo. */
+.brand-mark {
+  border-radius: 18px;
+  box-shadow:
+    inset 0 3px 6px rgba(255, 255, 255, 0.4),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Buttons become inflated clay pills that press in on click. */
+.btn {
+  border-color: transparent;
+  border-radius: 999px;
+  box-shadow: var(--btn-shadow);
+}
+.btn:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow:
+    0 2px 6px rgba(70, 80, 140, 0.18),
+    inset 0 2px 6px rgba(90, 100, 160, 0.25);
+}
+/* Ghost/outline buttons sit on the canvas, so use the recessed treatment. */
+.btn--ghost { box-shadow: var(--inset); }
+
+/* Segmented tabs: recess the track, inflate the active pill. */
+.tabs { box-shadow: var(--inset); }
+.tab.is-active { box-shadow: var(--btn-shadow); }
+
+/* Status badges as little puffy pills. */
+.badge {
+  box-shadow:
+    0 3px 7px rgba(70, 80, 140, 0.16),
+    inset 0 2px 3px rgba(255, 255, 255, 0.35);
+}
+
+/* Form controls look pressed into the surface. */
+.field input,
+.field textarea,
+.filter-field select,
+.filter-field input {
+  border-color: transparent;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--inset);
+}
+.field input:focus,
+.field textarea:focus,
+.filter-field select:focus,
+.filter-field input:focus {
+  border-color: transparent;
+  box-shadow: var(--inset), 0 0 0 3px var(--brand-100);
+}
+
+/* Header control pills (language + theme) get the same soft glossy edge. */
+.lang-switcher__select,
+.theme-toggle {
+  box-shadow: inset 0 2px 5px rgba(255, 255, 255, 0.15);
+}
+
+/* Inline code chips in the guide, recessed to match inputs. */
+.guide code {
+  border-color: transparent;
+  box-shadow: var(--inset);
 }

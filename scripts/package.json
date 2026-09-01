@@ -4,7 +4,9 @@
   "description": "PR review agent scripts (GitHub Action + local test runner)",
   "private": true,
   "scripts": {
-    "test:review": "node review.local.js"
+    "test:review": "node review.local.js",
+    "test:gen": "node generateTests.local.js",
+    "test:gen:all": "node generateTestsAll.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.114.0",

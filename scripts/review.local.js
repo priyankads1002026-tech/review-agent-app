@@ -13,7 +13,7 @@
 const fs = require("fs");
 const path = require("path");
 const { buildPrompt } = require("./reviewPrompt");
-const { MODEL, runReview } = require("./claude");
+const { MODEL, runPrompt } = require("./claude");
 
 async function main() {
   const apiKey = process.env.ANTHROPIC_API_KEY;
@@ -57,7 +57,7 @@ async function main() {
 
   console.log(`🤖 Sending sample diff to Anthropic Claude (${MODEL}) ...\n`);
 
-  const { text, usage } = await runReview(prompt, apiKey);
+  const { text, usage } = await runPrompt(prompt, apiKey);
   console.log(text || "(no text returned)");
   console.log(`\n---\nTokens — input: ${usage.input}, output: ${usage.output}`);
 }
