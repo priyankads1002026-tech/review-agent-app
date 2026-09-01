@@ -83,7 +83,7 @@
       "totalAmount": "Total Amount"
     },
     "errors": {
-      "unreachable": "Could not reach the backend API. Make sure it is running at http://localhost:8080.",
+      "unreachable": "Could not reach the backend API. Make sure it is running at http://localhost:8008.",
       "server": "The request failed on the server. Please try again.",
       "update": "Failed to update status. Is the backend running?",
       "delete": "Failed to delete claim. Is the backend running?"
@@ -102,7 +102,7 @@
     "errors": {
       "required": "Patient name, policy number and amount are required.",
       "amount": "Claim amount must be greater than zero.",
-      "submit": "Failed to submit claim. Make sure the backend is running at http://localhost:8080."
+      "submit": "Failed to submit claim. Make sure the backend is running at http://localhost:8008."
     }
   },
   "detail": {
@@ -129,14 +129,14 @@
     "title": "Claims Summary",
     "subtitle": "Aggregate stats computed by the backend (/api/claims/summary)",
     "loading": "Loading summary…",
-    "error": "Could not load the summary. Make sure the backend is running at http://localhost:8080."
+    "error": "Could not load the summary. Make sure the backend is running at http://localhost:8008."
   },
   "guide": {
     "intro": {
       "title": "What is this app?",
       "subtitle": "A quick tour of the Claim Billing Request System",
       "p1": "This is a proof-of-concept insurance claim billing demo: submit claims, review them, and watch a small dashboard update. Its real purpose is to give the AI PR-review agent realistic code to review — the app exists so there is something meaningful to open pull requests against.",
-      "p2": "Data lives in memory on the backend (http://localhost:8080), so everything resets when the server restarts. Use the tabs above to move between the Dashboard, the claims list, and the submit form."
+      "p2": "Data lives in memory on the backend (http://localhost:8008), so everything resets when the server restarts. Use the tabs above to move between the Dashboard, the claims list, and the submit form."
     },
     "submit": {
       "title": "Submit a new claim",

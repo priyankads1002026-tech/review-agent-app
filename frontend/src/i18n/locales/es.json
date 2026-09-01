@@ -83,7 +83,7 @@
       "totalAmount": "Importe total"
     },
     "errors": {
-      "unreachable": "No se pudo conectar con la API del backend. Asegúrese de que está en ejecución en http://localhost:8080.",
+      "unreachable": "No se pudo conectar con la API del backend. Asegúrese de que está en ejecución en http://localhost:8008.",
       "server": "La solicitud falló en el servidor. Inténtelo de nuevo.",
       "update": "No se pudo actualizar el estado. ¿Está el backend en ejecución?",
       "delete": "No se pudo eliminar la reclamación. ¿Está el backend en ejecución?"
@@ -102,7 +102,7 @@
     "errors": {
       "required": "El nombre del paciente, el número de póliza y el importe son obligatorios.",
       "amount": "El importe de la reclamación debe ser mayor que cero.",
-      "submit": "No se pudo enviar la reclamación. Asegúrese de que el backend está en ejecución en http://localhost:8080."
+      "submit": "No se pudo enviar la reclamación. Asegúrese de que el backend está en ejecución en http://localhost:8008."
     }
   },
   "detail": {
@@ -129,14 +129,14 @@
     "title": "Resumen de reclamaciones",
     "subtitle": "Estadísticas agregadas calculadas por el backend (/api/claims/summary)",
     "loading": "Cargando resumen…",
-    "error": "No se pudo cargar el resumen. Asegúrese de que el backend está en ejecución en http://localhost:8080."
+    "error": "No se pudo cargar el resumen. Asegúrese de que el backend está en ejecución en http://localhost:8008."
   },
   "guide": {
     "intro": {
       "title": "¿Qué es esta aplicación?",
       "subtitle": "Un recorrido rápido por el Sistema de Solicitud de Facturación de Reclamaciones",
       "p1": "Esta es una demostración de facturación de reclamaciones de seguros como prueba de concepto: envíe reclamaciones, revíselas y observe cómo se actualiza un pequeño panel. Su verdadero propósito es dar al agente de revisión de PR con IA código realista para revisar — la aplicación existe para que haya algo significativo contra lo que abrir pull requests.",
-      "p2": "Los datos se guardan en memoria en el backend (http://localhost:8080), por lo que todo se restablece al reiniciar el servidor. Use las pestañas de arriba para moverse entre el Panel, la lista de reclamaciones y el formulario de envío."
+      "p2": "Los datos se guardan en memoria en el backend (http://localhost:8008), por lo que todo se restablece al reiniciar el servidor. Use las pestañas de arriba para moverse entre el Panel, la lista de reclamaciones y el formulario de envío."
     },
     "submit": {
       "title": "Enviar una nueva reclamación",

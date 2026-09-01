@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:8080/api/claims";
+const BASE_URL = "http://localhost:8008/api/claims";
 
 export const fetchClaims = async () => {
   const response = await fetch(BASE_URL);
