@@ -16,7 +16,8 @@
     "dashboard": "Dashboard",
     "viewClaims": "View Claims",
     "submitNew": "Submit New Claim",
-    "guide": "Guide"
+    "guide": "Guide",
+    "analytics": "Analytics"
   },
   "actions": {
     "refresh": "↻ Refresh",
@@ -51,6 +52,7 @@
     "description": "Description",
     "status": "Status",
     "submitted": "Submitted",
+    "occupation": "Occupation",
     "actions": "Actions"
   },
   "list": {
@@ -98,6 +100,7 @@
     "patientPlaceholder": "e.g. Jane Doe",
     "policyPlaceholder": "e.g. POL-100234",
     "amountPlaceholder": "0.00",
+    "occupationPlaceholder": "e.g. Software Engineer (optional)",
     "descPlaceholder": "Brief description of the claim (optional)",
     "errors": {
       "required": "Patient name, policy number and amount are required.",
@@ -130,6 +133,20 @@
     "subtitle": "Aggregate stats computed by the backend (/api/claims/summary)",
     "loading": "Loading summary…",
     "error": "Could not load the summary. Make sure the backend is running at http://localhost:8008."
+  },
+  "analytics": {
+    "title": "Occupation Analytics",
+    "subtitle": "Claims broken down by patient occupation (/api/claims/analytics/occupation)",
+    "loading": "Loading analytics…",
+    "error": "Could not load analytics. Make sure the backend is running at http://localhost:8008.",
+    "totalClaims": "Total Claims",
+    "totalAmount": "Total Amount",
+    "occupations": "Occupations",
+    "colClaims": "Claims",
+    "colTotal": "Total Amount",
+    "colShare": "Share",
+    "emptyTitle": "No data yet",
+    "emptyHelp": "Submit some claims to see occupation analytics."
   },
   "guide": {
     "intro": {

@@ -16,6 +16,12 @@ export const fetchClaimSummary = async () => {
   return response.json();
 };
 
+export const fetchOccupationAnalytics = async () => {
+  const response = await fetch(`${BASE_URL}/analytics/occupation`);
+  if (!response.ok) throw new Error("Failed to fetch occupation analytics");
+  return response.json();
+};
+
 export const fetchClaimsByStatus = async (status) => {
   const response = await fetch(`${BASE_URL}/status/${encodeURIComponent(status)}`);
   if (!response.ok) throw new Error("Failed to fetch claims by status");

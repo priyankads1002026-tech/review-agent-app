@@ -30,12 +30,15 @@ const VALID_STATUSES = ["PENDING", "APPROVED", "REJECTED"];
 const MAX_NAME_LEN = 120;
 const MAX_POLICY_LEN = 60;
 const MAX_DESCRIPTION_LEN = 1000;
+const MAX_OCCUPATION_LEN = 80;
 
 // Validate + normalize the editable fields shared by POST and PUT. Returns
 // { error } on failure, or { value } with trimmed strings and a Number-coerced
 // claimAmount on success. id/status/submittedDate are the caller's job.
+// occupation is optional — it defaults to "Unknown" so the analytics grouping
+// always has a bucket to file a claim under.
 function validateClaimInput(body) {
-  const { patientName, policyNumber, claimAmount, description } = body || {};
+  const { patientName, policyNumber, claimAmount, description, occupation } = body || {};
   const amount = Number(claimAmount);
   if (
     typeof patientName !== "string" || patientName.trim() === "" ||
@@ -52,13 +55,18 @@ function validateClaimInput(body) {
   const name = patientName.trim();
   const policy = policyNumber.trim();
   const desc = typeof description === "string" ? description.trim() : "";
+  const occ =
+    typeof occupation === "string" && occupation.trim() !== ""
+      ? occupation.trim()
+      : "Unknown";
   if (
     name.length > MAX_NAME_LEN ||
     policy.length > MAX_POLICY_LEN ||
-    desc.length > MAX_DESCRIPTION_LEN
+    desc.length > MAX_DESCRIPTION_LEN ||
+    occ.length > MAX_OCCUPATION_LEN
   ) {
     return {
-      error: `patientName (max ${MAX_NAME_LEN}), policyNumber (max ${MAX_POLICY_LEN}) and description (max ${MAX_DESCRIPTION_LEN}) must be within their length limits`,
+      error: `patientName (max ${MAX_NAME_LEN}), policyNumber (max ${MAX_POLICY_LEN}), description (max ${MAX_DESCRIPTION_LEN}) and occupation (max ${MAX_OCCUPATION_LEN}) must be within their length limits`,
     };
   }
   return {
@@ -67,8 +75,60 @@ function validateClaimInput(body) {
       policyNumber: policy,
       claimAmount: amount,
       description: desc,
+      occupation: occ,
     },
   };
+}
+
+// Seed the store with mock claims that are all "under review" (PENDING), spread
+// across a range of occupations so the app — and the occupation analytics — have
+// realistic data on a fresh start. Skipped under the test runner so Supertest
+// suites keep starting from a clean, empty store.
+function seedPendingClaims() {
+  const firstNames = [
+    "Alice", "Bob", "Chen", "Dana", "Eli", "Farah", "Grace", "Hugo", "Ivan",
+    "Julia", "Kofi", "Lena", "Marco", "Nina", "Omar", "Priya", "Quinn", "Ravi",
+    "Sara", "Tom", "Uma", "Victor", "Wendy", "Xavier", "Yara", "Zane",
+  ];
+  const lastNames = [
+    "Johnson", "Singh", "Wei", "Ruiz", "Cohen", "Khan", "Miller", "Alvarez",
+    "Petrov", "Santos", "Mensah", "Novak", "Rossi", "Haddad", "Nakamura",
+    "Nair", "Bailey", "Kumar", "Lopez", "Clark",
+  ];
+  // [occupation, howMany] — uneven counts so the analytics ranking is meaningful.
+  const buckets = [
+    ["Software Engineer", 8],
+    ["Nurse", 7],
+    ["Teacher", 6],
+    ["Driver", 6],
+    ["Chef", 5],
+    ["Accountant", 5],
+    ["Doctor", 4],
+    ["Farmer", 4],
+  ]; // total = 45
+
+  let i = 0;
+  for (const [occupation, count] of buckets) {
+    for (let k = 0; k < count; k++) {
+      const first = firstNames[i % firstNames.length];
+      const last = lastNames[(i * 7) % lastNames.length];
+      // Deterministic but varied amount (~150–2150) so occupation totals differ.
+      const claimAmount = 150 + ((i * 137 + k * 61) % 2000);
+      const d = new Date();
+      d.setDate(d.getDate() - (i % 30));
+      claims.push({
+        id: nextId++,
+        patientName: `${first} ${last}`,
+        policyNumber: `POL-${2000 + i}`,
+        claimAmount,
+        description: `Pending review — ${occupation.toLowerCase()} claim`,
+        occupation,
+        status: "PENDING",
+        submittedDate: d.toISOString().slice(0, 10),
+      });
+      i++;
+    }
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -108,6 +168,27 @@ app.get("/api/claims/summary", (req, res) => {
     byStatus,
     totalClaimAmount,
   });
+});
+
+// GET /api/claims/analytics/occupation  -> claim counts + amount totals grouped
+// by occupation (for the Analytics dashboard). Literal path, so it stays ahead
+// of /:id per the route-ordering rule above.
+app.get("/api/claims/analytics/occupation", (req, res) => {
+  const map = new Map();
+  for (const c of claims) {
+    const key = (c.occupation && String(c.occupation).trim()) || "Unknown";
+    const entry = map.get(key) || { occupation: key, count: 0, totalClaimAmount: 0 };
+    entry.count += 1;
+    const n = Number(c.claimAmount);
+    entry.totalClaimAmount += Number.isFinite(n) ? n : 0; // NaN-safe
+    map.set(key, entry);
+  }
+  // Busiest occupations first: by count, then by total amount as a tiebreaker.
+  const byOccupation = [...map.values()].sort(
+    (a, b) => b.count - a.count || b.totalClaimAmount - a.totalClaimAmount
+  );
+  const totalClaimAmount = byOccupation.reduce((s, o) => s + o.totalClaimAmount, 0);
+  res.json({ total: claims.length, byOccupation, totalClaimAmount });
 });
 
 // GET /api/claims/status/:status  -> claims filtered by status
@@ -183,11 +264,13 @@ app.delete("/api/claims/:id", (req, res) => {
   res.status(204).send();
 });
 
-// Skip binding a real port under the test runner so Supertest can drive `app`
-// directly (in-process) without a port conflict.
+// Skip binding a real port (and seeding mock data) under the test runner so
+// Supertest can drive `app` directly, in-process, from a clean empty store.
 if (process.env.NODE_ENV !== "test") {
+  seedPendingClaims();
   app.listen(PORT, () => {
     console.log(`Claim Billing API running at http://localhost:${PORT}/api/claims`);
+    console.log(`Seeded ${claims.length} mock claims (all PENDING) across occupations.`);
   });
 }
 

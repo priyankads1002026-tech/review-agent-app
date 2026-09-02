@@ -16,7 +16,8 @@
     "dashboard": "डैशबोर्ड",
     "viewClaims": "क्लेम देखें",
     "submitNew": "नया क्लेम सबमिट करें",
-    "guide": "गाइड"
+    "guide": "गाइड",
+    "analytics": "विश्लेषण"
   },
   "actions": {
     "refresh": "↻ रिफ्रेश",
@@ -51,6 +52,7 @@
     "description": "विवरण",
     "status": "स्थिति",
     "submitted": "सबमिट किया गया",
+    "occupation": "व्यवसाय",
     "actions": "कार्रवाइयाँ"
   },
   "list": {
@@ -98,6 +100,7 @@
     "patientPlaceholder": "उदा. जेन डो",
     "policyPlaceholder": "उदा. POL-100234",
     "amountPlaceholder": "0.00",
+    "occupationPlaceholder": "उदा. सॉफ़्टवेयर इंजीनियर (वैकल्पिक)",
     "descPlaceholder": "क्लेम का संक्षिप्त विवरण (वैकल्पिक)",
     "errors": {
       "required": "रोगी का नाम, पॉलिसी नंबर और राशि आवश्यक हैं।",
@@ -130,6 +133,20 @@
     "subtitle": "बैकएंड द्वारा गणना किए गए समग्र आँकड़े (/api/claims/summary)",
     "loading": "सारांश लोड हो रहा है…",
     "error": "सारांश लोड नहीं हो सका। सुनिश्चित करें कि बैकएंड http://localhost:8008 पर चल रहा है।"
+  },
+  "analytics": {
+    "title": "व्यवसाय विश्लेषण",
+    "subtitle": "मरीज़ के व्यवसाय के अनुसार दावों का विवरण (/api/claims/analytics/occupation)",
+    "loading": "विश्लेषण लोड हो रहा है…",
+    "error": "विश्लेषण लोड नहीं हो सका। सुनिश्चित करें कि बैकएंड http://localhost:8008 पर चल रहा है।",
+    "totalClaims": "कुल दावे",
+    "totalAmount": "कुल राशि",
+    "occupations": "व्यवसाय",
+    "colClaims": "दावे",
+    "colTotal": "कुल राशि",
+    "colShare": "हिस्सा",
+    "emptyTitle": "अभी तक कोई डेटा नहीं",
+    "emptyHelp": "व्यवसाय विश्लेषण देखने के लिए कुछ दावे सबमिट करें।"
   },
   "guide": {
     "intro": {
