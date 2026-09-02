@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import ClaimList from "./components/ClaimList";
 import ClaimForm from "./components/ClaimForm";
 import ClaimSummary from "./components/ClaimSummary";
+import ClaimAnalytics from "./components/ClaimAnalytics";
 import HelpGuide from "./components/HelpGuide";
 import LanguageSwitcher from "./components/LanguageSwitcher";
 import { applyDocumentLang } from "./i18n";
@@ -111,6 +112,14 @@ function App() {
           >
             {t("nav.guide")}
           </button>
+          <button
+            className={`tab ${activeTab === "analytics" ? "is-active" : ""}`}
+            onClick={() => setActiveTab("analytics")}
+            role="tab"
+            aria-selected={activeTab === "analytics"}
+          >
+            {t("nav.analytics")}
+          </button>
         </nav>
 
         {activeTab === "dashboard" && (
@@ -121,6 +130,9 @@ function App() {
         )}
         {activeTab === "new" && <ClaimForm onClaimCreated={handleClaimCreated} />}
         {activeTab === "guide" && <HelpGuide />}
+        {activeTab === "analytics" && (
+          <ClaimAnalytics key={`${refresh}-${summaryRefresh}`} />
+        )}
       </main>
     </>
   );

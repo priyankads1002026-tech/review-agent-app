@@ -16,7 +16,8 @@
     "dashboard": "لوحة المعلومات",
     "viewClaims": "عرض المطالبات",
     "submitNew": "تقديم مطالبة جديدة",
-    "guide": "الدليل"
+    "guide": "الدليل",
+    "analytics": "التحليلات"
   },
   "actions": {
     "refresh": "↻ تحديث",
@@ -51,6 +52,7 @@
     "description": "الوصف",
     "status": "الحالة",
     "submitted": "تاريخ التقديم",
+    "occupation": "المهنة",
     "actions": "الإجراءات"
   },
   "list": {
@@ -102,6 +104,7 @@
     "patientPlaceholder": "مثال: جين دو",
     "policyPlaceholder": "مثال: POL-100234",
     "amountPlaceholder": "0.00",
+    "occupationPlaceholder": "مثال: مهندس برمجيات (اختياري)",
     "descPlaceholder": "وصف موجز للمطالبة (اختياري)",
     "errors": {
       "required": "اسم المريض ورقم الوثيقة والمبلغ حقول مطلوبة.",
@@ -134,6 +137,20 @@
     "subtitle": "إحصاءات مجمّعة يحسبها الخادم الخلفي (/api/claims/summary)",
     "loading": "جارٍ تحميل الملخص…",
     "error": "تعذّر تحميل الملخص. تأكد من أن الخادم الخلفي يعمل على http://localhost:8008."
+  },
+  "analytics": {
+    "title": "تحليلات المهن",
+    "subtitle": "المطالبات موزّعة حسب مهنة المريض (/api/claims/analytics/occupation)",
+    "loading": "جارٍ تحميل التحليلات…",
+    "error": "تعذّر تحميل التحليلات. تأكد من أن الخادم الخلفي يعمل على http://localhost:8008.",
+    "totalClaims": "إجمالي المطالبات",
+    "totalAmount": "المبلغ الإجمالي",
+    "occupations": "المهن",
+    "colClaims": "المطالبات",
+    "colTotal": "المبلغ الإجمالي",
+    "colShare": "النسبة",
+    "emptyTitle": "لا توجد بيانات بعد",
+    "emptyHelp": "أرسل بعض المطالبات لعرض تحليلات المهن."
   },
   "guide": {
     "intro": {

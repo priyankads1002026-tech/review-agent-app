@@ -26,6 +26,9 @@ vi.mock("./components/ClaimForm", () => ({
 vi.mock("./components/ClaimSummary", () => ({
   default: () => <div data-testid="claim-summary">ClaimSummary</div>,
 }));
+vi.mock("./components/ClaimAnalytics", () => ({
+  default: () => <div data-testid="claim-analytics">ClaimAnalytics</div>,
+}));
 vi.mock("./components/HelpGuide", () => ({
   default: () => <div data-testid="help-guide">HelpGuide</div>,
 }));
@@ -81,6 +84,14 @@ describe("App", () => {
     const tabs = screen.getAllByRole("tab");
     fireEvent.click(tabs[3]);
     expect(screen.getByTestId("help-guide")).toBeInTheDocument();
+  });
+
+  it("switches to the Analytics tab and renders ClaimAnalytics", () => {
+    render(<App />);
+    const tabs = screen.getAllByRole("tab");
+    // Order: dashboard, list, new, guide, analytics
+    fireEvent.click(tabs[4]);
+    expect(screen.getByTestId("claim-analytics")).toBeInTheDocument();
   });
 
   it("returns to the list tab after a claim is created", () => {

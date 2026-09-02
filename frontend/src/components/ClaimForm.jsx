@@ -8,6 +8,7 @@ function ClaimForm({ onClaimCreated }) {
     patientName: "",
     policyNumber: "",
     claimAmount: "",
+    occupation: "",
     description: "",
   });
   const [error, setError] = useState(null);
@@ -39,7 +40,7 @@ function ClaimForm({ onClaimCreated }) {
         claimAmount: parseFloat(form.claimAmount),
       });
       setSuccess(true);
-      setForm({ patientName: "", policyNumber: "", claimAmount: "", description: "" });
+      setForm({ patientName: "", policyNumber: "", claimAmount: "", occupation: "", description: "" });
       if (onClaimCreated) onClaimCreated();
     } catch (err) {
       setError(t("form.errors.submit"));
@@ -96,6 +97,15 @@ function ClaimForm({ onClaimCreated }) {
               value={form.claimAmount}
               onChange={handleChange}
               placeholder={t("form.amountPlaceholder")}
+            />
+          </div>
+          <div className="field">
+            <label>{t("fields.occupation")}</label>
+            <input
+              name="occupation"
+              value={form.occupation}
+              onChange={handleChange}
+              placeholder={t("form.occupationPlaceholder")}
             />
           </div>
           <div className="field full">

@@ -121,6 +121,14 @@ function ClaimDetail({ claimId, onClose }) {
                 </dd>
               </div>
               <div className="detail-row">
+                <dt className="detail-row__label">{t("fields.occupation")}</dt>
+                <dd className="detail-row__value">
+                  {claim.occupation || (
+                    <span className="cell-muted">{t("status.unknown")}</span>
+                  )}
+                </dd>
+              </div>
+              <div className="detail-row">
                 <dt className="detail-row__label">{t("fields.status")}</dt>
                 <dd className="detail-row__value">
                   <StatusBadge status={claim.status} />

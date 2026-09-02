@@ -185,6 +185,46 @@ describe("GET /api/claims/summary", () => {
   });
 });
 
+describe("GET /api/claims/analytics/occupation", () => {
+  it("groups claim counts and totals by occupation, sorted by count desc", async () => {
+    const a = await createClaim({ occupation: "QA Engineer", claimAmount: 100 });
+    const b = await createClaim({ occupation: "QA Engineer", claimAmount: 200 });
+    const c = await createClaim({ occupation: "Radiologist", claimAmount: 50 });
+
+    const res = await request(app).get("/api/claims/analytics/occupation");
+    expect(res.status).toBe(200);
+    expect(Array.isArray(res.body.byOccupation)).toBe(true);
+    expect(typeof res.body.total).toBe("number");
+    expect(typeof res.body.totalClaimAmount).toBe("number");
+
+    const eng = res.body.byOccupation.find((o) => o.occupation === "QA Engineer");
+    const rad = res.body.byOccupation.find((o) => o.occupation === "Radiologist");
+    expect(eng).toMatchObject({ count: 2, totalClaimAmount: 300 });
+    expect(rad).toMatchObject({ count: 1, totalClaimAmount: 50 });
+
+    // Busier occupation must rank before the quieter one (sorted by count desc).
+    const idxEng = res.body.byOccupation.findIndex((o) => o.occupation === "QA Engineer");
+    const idxRad = res.body.byOccupation.findIndex((o) => o.occupation === "Radiologist");
+    expect(idxEng).toBeLessThan(idxRad);
+
+    await request(app).delete(`/api/claims/${a.id}`);
+    await request(app).delete(`/api/claims/${b.id}`);
+    await request(app).delete(`/api/claims/${c.id}`);
+  });
+
+  it("files a claim created without an occupation under 'Unknown'", async () => {
+    const claim = await createClaim(); // newClaimPayload carries no occupation
+    expect(claim.occupation).toBe("Unknown");
+
+    const res = await request(app).get("/api/claims/analytics/occupation");
+    const unknown = res.body.byOccupation.find((o) => o.occupation === "Unknown");
+    expect(unknown).toBeTruthy();
+    expect(unknown.count).toBeGreaterThanOrEqual(1);
+
+    await request(app).delete(`/api/claims/${claim.id}`);
+  });
+});
+
 describe("PUT /api/claims/:id", () => {
   it("updates editable fields while preserving id, status, and submittedDate", async () => {
     const claim = await createClaim();

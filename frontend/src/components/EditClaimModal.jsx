@@ -11,6 +11,7 @@ function EditClaimModal({ claim, onClose, onSaved }) {
     patientName: claim.patientName ?? "",
     policyNumber: claim.policyNumber ?? "",
     claimAmount: claim.claimAmount != null ? String(claim.claimAmount) : "",
+    occupation: claim.occupation ?? "",
     description: claim.description ?? "",
   });
   const [error, setError] = useState(null);
@@ -42,6 +43,7 @@ function EditClaimModal({ claim, onClose, onSaved }) {
         patientName: form.patientName,
         policyNumber: form.policyNumber,
         claimAmount: amount,
+        occupation: form.occupation,
         description: form.description,
       });
       onSaved();
@@ -113,6 +115,15 @@ function EditClaimModal({ claim, onClose, onSaved }) {
                   value={form.claimAmount}
                   onChange={handleChange}
                   placeholder={t("form.amountPlaceholder")}
+                />
+              </div>
+              <div className="field">
+                <label>{t("fields.occupation")}</label>
+                <input
+                  name="occupation"
+                  value={form.occupation}
+                  onChange={handleChange}
+                  placeholder={t("form.occupationPlaceholder")}
                 />
               </div>
               <div className="field full">

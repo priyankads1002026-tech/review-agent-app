@@ -16,7 +16,8 @@
     "dashboard": "Panel",
     "viewClaims": "Ver reclamaciones",
     "submitNew": "Enviar nueva reclamación",
-    "guide": "Guía"
+    "guide": "Guía",
+    "analytics": "Analíticas"
   },
   "actions": {
     "refresh": "↻ Actualizar",
@@ -51,6 +52,7 @@
     "description": "Descripción",
     "status": "Estado",
     "submitted": "Enviada",
+    "occupation": "Ocupación",
     "actions": "Acciones"
   },
   "list": {
@@ -98,6 +100,7 @@
     "patientPlaceholder": "p. ej. Jane Doe",
     "policyPlaceholder": "p. ej. POL-100234",
     "amountPlaceholder": "0.00",
+    "occupationPlaceholder": "p. ej. Ingeniero de software (opcional)",
     "descPlaceholder": "Breve descripción de la reclamación (opcional)",
     "errors": {
       "required": "El nombre del paciente, el número de póliza y el importe son obligatorios.",
@@ -130,6 +133,20 @@
     "subtitle": "Estadísticas agregadas calculadas por el backend (/api/claims/summary)",
     "loading": "Cargando resumen…",
     "error": "No se pudo cargar el resumen. Asegúrese de que el backend está en ejecución en http://localhost:8008."
+  },
+  "analytics": {
+    "title": "Analíticas por ocupación",
+    "subtitle": "Reclamaciones desglosadas por ocupación del paciente (/api/claims/analytics/occupation)",
+    "loading": "Cargando analíticas…",
+    "error": "No se pudieron cargar las analíticas. Asegúrese de que el backend está en ejecución en http://localhost:8008.",
+    "totalClaims": "Reclamaciones totales",
+    "totalAmount": "Importe total",
+    "occupations": "Ocupaciones",
+    "colClaims": "Reclamaciones",
+    "colTotal": "Importe total",
+    "colShare": "Proporción",
+    "emptyTitle": "Aún no hay datos",
+    "emptyHelp": "Envíe algunas reclamaciones para ver las analíticas por ocupación."
   },
   "guide": {
     "intro": {
